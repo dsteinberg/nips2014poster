@@ -4,20 +4,20 @@
 %
 \begin{tikzpicture}
     [	
-	    font=\footnotesize, 
-		node distance=5mm,
-		odist/.style ={circle, draw=black!60, thick, inner sep=1pt, 
-                        minimum size=6mm, fill=black!25},
-		pdist/.style ={circle, draw=black!60, dashed, thick, inner sep=1pt, 
-                        minimum size=6mm, fill=black!25},
-		dist/.style  ={circle, draw=black!60, thick, inner sep=1pt, 
-                        minimum size=6mm},
+	    font=\small, 
+		node distance=\arclen,
+		odist/.style ={circle, draw=black!60, thick, inner sep=\nodepad, 
+                        minimum size=\nodesize, fill=black!25},
+		pdist/.style ={circle, draw=black!60, dashed, thick, inner sep=\nodepad, 
+                        minimum size=\nodesize, fill=black!25},
+		dist/.style  ={circle, draw=black!60, thick, inner sep=\nodepad, 
+                        minimum size=\nodesize},
 		point/.style ={circle,draw=black!60,fill=black!60,thick,inner sep=0pt,
-                       minimum size=2mm},
-		oarc/.style  ={->,>=latex',thick},
-		ofeild/.style  ={-,>=latex',line width=0.8mm},
-		plate/.style ={draw=black!60,rounded corners,thick,inner sep=13pt},
-		reps/.style  ={anchor=south east,inner sep=3pt}
+                       minimum size=\pointsize},
+		oarc/.style  ={->,>=latex',line width=\arcwidth},
+		plate/.style ={draw=black!60,rounded corners,thick,inner sep=\platepad},
+		reps/.style  ={anchor=south east,inner sep=3pt},
+		ofeild/.style  ={-,>=latex',line width=\fieldwidth}
 	]
 
     
@@ -34,12 +34,12 @@
     \node            (d1)    [above=of d2, yshift=4mm]          {$\ldots$};
 
     \node[odist]    (x0)    [below=of q0]        {$\obss_{0}$};
-    \node[odist]    (x1)    [right=of x0]        {$\obss_{1}$};
-    \node[odist]    (x2)    [right=of x1]        {$\obss_{2}$};
-    \node[odist]    (x3)    [right=of x2]        {$\obss_{3}$};
-    \node           (d3)    [right=of x3]        {$\ldots$};
+    \node[odist]    (x1)    [below=of q1]        {$\obss_{1}$};
+    \node[odist]    (x2)    [below=of q2]        {$\obss_{2}$};
+    \node[odist]    (x3)    [below=of q3]        {$\obss_{3}$};
+    \node           (d3)    [below=of d2]        {$\ldots$};
     
-    \node[point]    (lcov)  [below=of x1,xshift=5mm,label=below:$\lstd$] {};
+    \node[point]    (lcov)  [right=of x3,xshift=5mm,label=right:$\lstd$] {};
 
     \draw[ofeild]     (q0) to (q1);
     \draw[ofeild]     (q1) to (q2);
@@ -56,9 +56,9 @@
     \draw[oarc]     (q2) to (x2);
     \draw[oarc]     (q3) to (x3);
 
-    \draw[oarc]     (lcov) to (x0);
-    \draw[oarc]     (lcov) to (x1);
-    \draw[oarc]     (lcov) to (x2);
+    \draw[oarc]     (lcov) to[out=210, in=-30] (x0);
+    \draw[oarc]     (lcov) to[out=210, in=-30] (x1);
+    \draw[oarc]     (lcov) to[out=210, in=-30] (x2);
     \draw[oarc]     (lcov) to (x3);
     
 \end{tikzpicture}

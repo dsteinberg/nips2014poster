@@ -4,18 +4,19 @@
 \begin{tikzpicture}
     [	
 	    font=\small, 
-		node distance=1.5cm,
-		odist/.style ={circle, draw=black!60, thick, inner sep=5pt, 
-                        minimum size=1cm, fill=black!25},
-		pdist/.style ={circle, draw=black!60, dashed, thick, inner sep=5pt, 
-                        minimum size=1cm, fill=black!25},
-		dist/.style  ={circle, draw=black!60, thick, inner sep=5pt, 
-                        minimum size=1cm},
+		node distance=\arclen,
+		odist/.style ={circle, draw=black!60, thick, inner sep=\nodepad, 
+                        minimum size=\nodesize, fill=black!25},
+		pdist/.style ={circle, draw=black!60, dashed, thick, inner sep=\nodepad, 
+                        minimum size=\nodesize, fill=black!25},
+		dist/.style  ={circle, draw=black!60, thick, inner sep=\nodepad, 
+                        minimum size=\nodesize},
 		point/.style ={circle,draw=black!60,fill=black!60,thick,inner sep=0pt,
-                       minimum size=2mm},
-		oarc/.style  ={->,>=latex',thick},
-		plate/.style ={draw=black!60,rounded corners,thick,inner sep=13pt},
-		reps/.style  ={anchor=south east,inner sep=3pt}
+                        minimum size=\pointsize},
+		oarc/.style  ={->,>=latex',line width=\arcwidth},
+		plate/.style ={draw=black!60,rounded corners,thick,inner sep=\platepad},
+		reps/.style  ={anchor=south east,inner sep=3pt},
+        hid/.style   ={circle, draw=white!0, minimum size=1mm}
 	]
 
     \node[dist]     (q0)                         {$\lstate$};
@@ -26,11 +27,13 @@
 
     \node[odist]    (x0)    [below=of q0]        {$\obs$};
 
-    \node[point]    (lcov)  [right=of x0,label=$\lcov$]  {};
+    \node[point]    (lcov)  [right=of x0,label=right:$\lcov$]  {};
 
     \draw[oarc]     (q0) to (x0);
     \draw[oarc]     (mean) to (q0);
     \draw[oarc]     (cov) to (q0);
     \draw[oarc]     (lcov) to (x0);
+
+    \node[hid]    (sp)      [below=of x0,yshift=7.3mm] {};
     
 \end{tikzpicture}

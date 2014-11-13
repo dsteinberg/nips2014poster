@@ -25,6 +25,7 @@
 \documentclass[final]{beamer}
 
 \usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage{subfig}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
 
@@ -36,6 +37,13 @@
 
 % Use more stuff from tikz
 \usetikzlibrary{arrows, backgrounds, positioning, fit}
+\newcommand{\arclen}     {1.5cm}
+\newcommand{\nodesize}   {1.8cm}
+\newcommand{\nodepad}    {5pt}
+\newcommand{\platepad}   {13pt}
+\newcommand{\arcwidth}   {3pt}
+\newcommand{\fieldwidth} {6pt}
+\newcommand{\pointsize}  {4mm}
 
 %-----------------------------------------------------------
 % Define the column widths and overall poster size
@@ -127,8 +135,8 @@ $\nonlin{\cdot}$, which is often nonlinear:
     \item We require a posterior distribution over $\lstate$.
     \item We don't want to re-derive the
         learning equations for every new $\nonlin{\cdot}$.
-    \item The gradients $\partial{\nonlin{\lstate}} /
-        \partial\lstate$, may not be accessible or exist.
+    \item The gradients, $\partial{\nonlin{\lstate}} /
+        \partial\lstate$, may not be known.
     \item Learning has to be fast (not MCMC).
     \item $\obs$ may be a continuous process, like the path swept out by a
         robotic arm, in which case $\lstate$ may be a \textbf{Gaussian
@@ -143,38 +151,44 @@ $\nonlin{\cdot}$, which is often nonlinear:
 
 \begin{block}{Nonlinear Gaussian Models}
 
-Prior over latent inputs $\lstate$
+Prior over latent inputs $\lstate$,
 \begin{equation}
     \prob{\lstate} = \gausC{\lstate}{\prmean, \prcov}
-\end{equation}%
-Likelihood (encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$)
+\end{equation}
+Likelihood -- encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$,
 \begin{equation}
     \probC{\obs}{\lstate} = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
 \end{equation}%
-Inversion = posterior
+Inversion = posterior,
 \begin{equation}
     \probC{\lstate}{\obs} = \frac{\probC{\obs}{\lstate}\prob{\lstate}}
         {\prob{\obs}}
 \end{equation}
-Marginal likelihood $\ddot\frown$
+But the marginal likelihood is intractable,
 \begin{equation}
     \prob{\obs} = \int \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
-        \gausC{\lstate}{\prmean, \prcov} d\lstate
+        \gausC{\lstate}{\prmean, \prcov} d\lstate.
 \end{equation}
 
 \end{block}
 
 %------------------------------------------------
 
+\vspace{-1.5cm}
 \begin{figure}
-    \input{fig/gausmod.tex}
-    \caption{Graphical model of nonlinear Gaussian inversion problem}
+    \subfloat[][]{
+        \vspace{-2cm}
+        \input{fig/gausmod.tex}
+        \label{sfig:gaus}
+    }
+    \subfloat[][]{
+        \input{fig/gp.tex}
+        \label{sfig:gp}
+    }
+    \caption{Graphical model of nonlinear Gaussian \subref{sfig:gaus} and
+        Gaussian process \subref{sfig:gp} inversion problems.}
 \end{figure}
 
-%\begin{figure}
-%\includegraphics[width=0.8\linewidth]{fig/placeholder.jpg}
-%\caption{Figure caption}
-%\end{figure}
 
 %----------------------------------------------------------------------------------------
 
@@ -192,7 +206,7 @@ Marginal likelihood $\ddot\frown$
 %	MATERIALS
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Materials}
+\begin{block}{Variational Inference \& Linearization}
 
 The following materials were required to complete the research:
 
