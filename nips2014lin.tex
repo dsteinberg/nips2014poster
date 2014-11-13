@@ -34,6 +34,9 @@
 \setbeamercolor{block alerted body}{fg=black,bg=ngreen!10} % Colors of the body of highlighted blocks
 % Many more colors are available for use in beamerthemeconfposter.sty
 
+% Use more stuff from tikz
+\usetikzlibrary{arrows, backgrounds, positioning, fit}
+
 %-----------------------------------------------------------
 % Define the column widths and overall poster size
 % To set effective sepwid, onecolwid and twocolwid values, first choose how many columns you want and how much separation you want between columns
@@ -56,8 +59,15 @@
 %-----------------------------------------------------------
 
 \usepackage{graphicx}  % Required for including images
-
 \usepackage{booktabs} % Top and bottom rules for tables
+
+
+\input{notation}
+
+% Red underline
+\newsavebox\MBox
+\newcommand\Cline[2][red]{{\sbox\MBox{$#2$}%
+  \rlap{\usebox\MBox}\color{#1}\rule[-1.6\dp\MBox]{\wd\MBox}{0.7pt}}}
 
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION 
@@ -90,39 +100,81 @@
 \begin{column}{\onecolwid} % The first column
 
 %----------------------------------------------------------------------------------------
-%	OBJECTIVES
+%	Problem statement and aims
 %----------------------------------------------------------------------------------------
 
-\begin{alertblock}{Objectives}
+\begin{alertblock}{Inverse Problems}
 
-Lorem ipsum dolor sit amet, consectetur, nunc tellus pulvinar tortor, commodo eleifend risus arcu sed odio:
+Many problems in science and engineering have some \textbf{forward} or system model,
+$\nonlin{\cdot}$, which is often nonlinear:
+\begin{equation*}
+    \obs = \nonlin{\lstate} + \boldsymbol\epsilon
+\end{equation*}
+\vspace{-2cm}
 \begin{itemize}
-\item Mollis dignissim, magna augue tincidunt dolor, interdum vestibulum urna
-\item Sed aliquet luctus lectus, eget aliquet leo ullamcorper consequat. Vivamus eros sem, iaculis ut euismod non, sollicitudin vel orci.
-\item Nascetur ridiculus mus.  
-\item Euismod non erat. Nam ultricies pellentesque nunc, ultrices volutpat nisl ultrices a.
+    \item We can measure the outputs of the system, $\obs$, but the inputs,
+        $\lstate$, are \textbf{latent}.
+    \item We wish to infer these inputs \emph{without} access to the inverse
+        system model, $\nonlininv{\cdot}$.
 \end{itemize}
 
 \end{alertblock}
+
+
+\begin{block}{Aims}
+
+\begin{enumerate}
+    \item We require a posterior distribution over $\lstate$.
+    \item We don't want to re-derive the
+        learning equations for every new $\nonlin{\cdot}$.
+    \item The gradients $\partial{\nonlin{\lstate}} /
+        \partial\lstate$, may not be accessible or exist.
+    \item Learning has to be fast (not MCMC).
+    \item $\obs$ may be a continuous process, like the path swept out by a
+        robotic arm, in which case $\lstate$ may be a \textbf{Gaussian
+            Process}.
+\end{enumerate}
+
+\end{block}
 
 %----------------------------------------------------------------------------------------
 %	INTRODUCTION
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Introduction}
+\begin{block}{Nonlinear Gaussian Models}
 
-Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed commodo molestie porta. Sed ultrices scelerisque sapien ac commodo. Donec ut volutpat elit. Sed laoreet accumsan mattis. Integer sapien tellus, auctor ac blandit eget, sollicitudin vitae lorem. Praesent dictum tempor pulvinar. Suspendisse potenti. Sed tincidunt varius ipsum, et porta nulla suscipit et. Etiam congue bibendum felis, ac dictum augue cursus a. \textbf{Donec} magna eros, iaculis sit amet placerat quis, laoreet id est. In ut orci purus, interdum ornare nibh. Pellentesque pulvinar, nibh ac malesuada accumsan, urna nunc convallis tortor, ac vehicula nulla tellus eget nulla. Nullam lectus tortor, \textit{consequat tempor hendrerit} quis, vestibulum in diam. Maecenas sed diam augue.
-
-This statement requires citation.
+Prior over latent inputs $\lstate$
+\begin{equation}
+    \prob{\lstate} = \gausC{\lstate}{\prmean, \prcov}
+\end{equation}%
+Likelihood (encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$)
+\begin{equation}
+    \probC{\obs}{\lstate} = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
+\end{equation}%
+Inversion = posterior
+\begin{equation}
+    \probC{\lstate}{\obs} = \frac{\probC{\obs}{\lstate}\prob{\lstate}}
+        {\prob{\obs}}
+\end{equation}
+Marginal likelihood $\ddot\frown$
+\begin{equation}
+    \prob{\obs} = \int \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
+        \gausC{\lstate}{\prmean, \prcov} d\lstate
+\end{equation}
 
 \end{block}
 
 %------------------------------------------------
 
 \begin{figure}
-\includegraphics[width=0.8\linewidth]{fig/placeholder.jpg}
-\caption{Figure caption}
+    \input{fig/gausmod.tex}
+    \caption{Graphical model of nonlinear Gaussian inversion problem}
 \end{figure}
+
+%\begin{figure}
+%\includegraphics[width=0.8\linewidth]{fig/placeholder.jpg}
+%\caption{Figure caption}
+%\end{figure}
 
 %----------------------------------------------------------------------------------------
 
