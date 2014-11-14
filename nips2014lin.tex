@@ -18,9 +18,10 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%----------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 
 \documentclass[final]{beamer}
 
@@ -77,9 +78,10 @@
 \newcommand\Cline[2][red]{{\sbox\MBox{$#2$}%
   \rlap{\usebox\MBox}\color{#1}\rule[-1.6\dp\MBox]{\wd\MBox}{0.7pt}}}
 
-%----------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
 %	TITLE SECTION 
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 
 \title{Extended and Unscented Gaussian Processes} % Poster title
 
@@ -89,7 +91,7 @@
 \institute{\textsuperscript{1}NICTA, 
            \textsuperscript{2}The University of New South Wales} % Institution(s)
 
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 
 \begin{document}
 
@@ -107,14 +109,15 @@
 
 \begin{column}{\onecolwid} % The first column
 
-%----------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
 %	Problem statement and aims
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 
 \begin{alertblock}{Inverse Problems}
 
-Many problems in science and engineering have some \textbf{forward} or system model,
-$\nonlin{\cdot}$, which is often nonlinear:
+Many problems in science and engineering have some \textbf{forward} or system
+model, $\nonlin{\cdot}$, which is often nonlinear:
 \begin{equation*}
     \obs = \nonlin{\lstate} + \boldsymbol\epsilon
 \end{equation*}
@@ -145,9 +148,10 @@ $\nonlin{\cdot}$, which is often nonlinear:
 
 \end{block}
 
-%----------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
 %	INTRODUCTION
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 
 \begin{block}{Nonlinear Gaussian Models}
 
@@ -163,6 +167,7 @@ Inversion = posterior,
 \begin{equation}
     \probC{\lstate}{\obs} = \frac{\probC{\obs}{\lstate}\prob{\lstate}}
         {\prob{\obs}}
+    \label{eq:post}
 \end{equation}
 But the marginal likelihood is intractable,
 \begin{equation}
@@ -172,7 +177,10 @@ But the marginal likelihood is intractable,
 
 \end{block}
 
-%------------------------------------------------
+
+%------------------------------------------------------------------------------
+%	Nonlinear Gaussian Models
+%------------------------------------------------------------------------------
 
 \vspace{-1.5cm}
 \begin{figure}
@@ -202,29 +210,30 @@ But the marginal likelihood is intractable,
 
 \begin{column}{\onecolwid}\vspace{-.6in} % The first column within column 2 (column 2.1)
 
-%----------------------------------------------------------------------------------------
-%	MATERIALS
-%----------------------------------------------------------------------------------------
+
+%------------------------------------------------------------------------------
+%	Inference and Linearization
+%------------------------------------------------------------------------------
 
 \begin{block}{Variational Inference \& Linearization}
 
-The following materials were required to complete the research:
-
-\begin{itemize}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
-\item Eu facilisis est tempus quis
-\end{itemize}
-
-The materials were prepared according to the steps outlined below:
-
-\begin{enumerate}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
-\item Curabitur pellentesque dignissim
-\end{enumerate}
+We cannot find the posterior in \eqref{eq:post} because the of the intractable
+marginal likelihood. In variational inference we can \emph{approximate} the
+posterior, $\probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate}
+{\pomean, \pocov}$, and then establish as \emph{lower bound} on the log
+marginal likelihood,
+\begin{equation}
+    \Fengy = \expec{q\lstate}{\log \probC{\obs}{\lstate}}
+        - \KL{\qrob{\lstate}}{\prob{\lstate}}.
+    \label{eq:fengy}
+\end{equation}
+Then can use $\Fengy$ to \emph{optimise} our posterior parameters:
+\begin{equation}
+    \pomean^* = \argmax_\pomean{\Fengy}, \qquad
+    \pocov^* = \argmax_\pocov{\Fengy},
+\end{equation}
+where $\qrob{\lstate}$ should approach the true posterior
+$\probC{\lstate}{\obs}$.
 
 \end{block}
 
