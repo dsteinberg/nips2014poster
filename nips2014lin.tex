@@ -233,7 +233,42 @@ Then can use $\Fengy$ to \emph{optimise} our posterior parameters:
     \pocov^* = \argmax_\pocov{\Fengy},
 \end{equation}
 where $\qrob{\lstate}$ should approach the true posterior
-$\probC{\lstate}{\obs}$.
+$\probC{\lstate}{\obs}$. \emph{But}, the expected log likelihood has an
+intractable quadratic term,
+\begin{equation*}
+    \expec{q\lstate}{\log \probC{\obs}{\lstate}} = 
+    -\frac{1}{2} \expec{q\lstate}{
+        \brac{\obs - \Cline{\nonlin{\lstate}}}\transpose \lcov\inv
+        \brac{\obs - \Cline{\nonlin{\lstate}}}} + \ldots
+\end{equation*}
+We use two tricks to get around this problem;
+\begin{enumerate}
+    \item we \emph{linearise} $\nonlin{\lstate}$,
+        \begin{equation}
+            \nonlin{\lstate} \approx \Linmat\lstate + \intcpt.
+            \label{eq:linearize}
+        \end{equation}
+    \item we use a \emph{Newton method} to find the posterior mean with the
+        linearized $\tilde\Fengy$,
+        \begin{equation}
+            \pomean_{k+1} = \pomean_k -
+            \step\brac{\nabla_\pomean\nabla_\pomean\tilde\Fengy}\inv 
+                \nabla_\pomean\tilde\Fengy,
+            \label{eq:newton}
+        \end{equation}
+\end{enumerate}
+
+Posterion parameters:
+\begin{align}
+    \pomean_{k+1} &= \brac{1-\step}\pomean_k + \step\prmean 
+        + \step\Kgain_k\brac{\obs - \intcpt_k - \Linmat_k\prmean},
+        \label{eq:pomean} \\
+    \Kgain_k &= \prcov\Linmat_k\transpose\brac{\lcov +
+        \Linmat_k\prcov\Linmat_k\transpose}\inv, 
+        \label{eq:kgain} \\
+    \pocov &= \brac{\ident{D} - \Kgain\Linmat}\!\prcov
+    \label{eq:pocov}
+\end{align}
 
 \end{block}
 
