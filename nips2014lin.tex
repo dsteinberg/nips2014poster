@@ -142,8 +142,8 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
         \partial\lstate$, may not be known.
     \item Learning has to be fast (not MCMC).
     \item $\obs$ may be a continuous process, like the path swept out by a
-        robotic arm, in which case $\lstate$ may be a \textbf{Gaussian
-            Process}.
+        robotic arm, in which case $\lstate$ may be drawn from a 
+        \textbf{Gaussian Process}.
 \end{enumerate}
 
 \end{block}
@@ -153,15 +153,17 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
 %	INTRODUCTION
 %------------------------------------------------------------------------------
 
-\begin{block}{Nonlinear Gaussian Models}
+\begin{block}{GPs with nonlinear likelihoods}
 
-Prior over latent inputs $\lstate$,
+Prior on latent functions $\lstate$ at inputs $\Inobs =
+\cbrac{\inobs_n}^N_{n=1}$,
 \begin{equation}
-    \prob{\lstate} = \gausC{\lstate}{\prmean, \prcov}
+    \prob{\lstate} = \gausC{\lstate}{\mathbf{0}, \KERNL\!\brac{\Inobs, \Inobs}}
 \end{equation}
 Likelihood -- encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$,
 \begin{equation}
-    \probC{\obs}{\lstate} = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
+    \probC{\obs}{\lstate} = \gausC{\obs}{\Cline{\nonlin{\lstate}},
+        \lvar\ident{N}}
 \end{equation}%
 Inversion = posterior,
 \begin{equation}
@@ -171,8 +173,8 @@ Inversion = posterior,
 \end{equation}
 But the marginal likelihood is intractable,
 \begin{equation}
-    \prob{\obs} = \int \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
-        \gausC{\lstate}{\prmean, \prcov} d\lstate.
+    \prob{\obs} = \int \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}
+        \gausC{\lstate}{\mathbf{0}, \KERNL} d\lstate
 \end{equation}
 
 \end{block}
@@ -184,17 +186,23 @@ But the marginal likelihood is intractable,
 
 \vspace{-1.5cm}
 \begin{figure}
-    \subfloat[][]{
-        \vspace{-2cm}
-        \input{fig/gausmod.tex}
-        \label{sfig:gaus}
-    }
-    \subfloat[][]{
-        \input{fig/gp.tex}
-        \label{sfig:gp}
-    }
-    \caption{Graphical model of nonlinear Gaussian \subref{sfig:gaus} and
-        Gaussian process \subref{sfig:gp} inversion problems.}
+    %\subfloat[][]{
+        %\vspace{-2cm}
+        %\input{fig/gausmod.tex}
+        %\label{sfig:gaus}
+    %}
+    %\subfloat[][]{
+        %\input{fig/gp.tex}
+        %\label{sfig:gp}
+    %}
+    %\caption{Graphical model of nonlinear Gaussian \subref{sfig:gaus} and
+        %Gaussian process \subref{sfig:gp} inversion problems.}
+
+    \input{fig/gp.tex}
+    \label{fig:gp}
+
+    \caption{A Gaussian process for inversion problems -- the mapping from the
+        distribution over $\lstates_n$ to $\obss_n$ is nonlinear.}
 \end{figure}
 
 
@@ -217,17 +225,16 @@ But the marginal likelihood is intractable,
 
 \begin{block}{Variational Inference \& Linearization}
 
-We cannot find the posterior in \eqref{eq:post} because the of the intractable
-marginal likelihood. In variational inference we can \emph{approximate} the
-posterior, $\probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate}
-{\pomean, \pocov}$, and then establish as \emph{lower bound} on the log
-marginal likelihood,
+In variational inference we can \emph{approximate} the posterior,
+$\probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate} {\pomean,
+    \pocov}$, and then establish as \emph{lower bound} on the log marginal
+likelihood,
 \begin{equation}
     \Fengy = \expec{q\lstate}{\log \probC{\obs}{\lstate}}
         - \KL{\qrob{\lstate}}{\prob{\lstate}}.
     \label{eq:fengy}
 \end{equation}
-Then can use $\Fengy$ to \emph{optimise} our posterior parameters:
+Then we use $\Fengy$ to \emph{optimise} posterior parameters:
 \begin{equation}
     \pomean^* = \argmax_\pomean{\Fengy}, \qquad
     \pocov^* = \argmax_\pocov{\Fengy},
@@ -237,19 +244,19 @@ $\probC{\lstate}{\obs}$. \emph{But}, the expected log likelihood has an
 intractable quadratic term,
 \begin{equation*}
     \expec{q\lstate}{\log \probC{\obs}{\lstate}} = 
-    -\frac{1}{2} \expec{q\lstate}{
-        \brac{\obs - \Cline{\nonlin{\lstate}}}\transpose \lcov\inv
+    -\frac{1}{2\lvar} \expec{q\lstate}{
+        \brac{\obs - \Cline{\nonlin{\lstate}}}\transpose
         \brac{\obs - \Cline{\nonlin{\lstate}}}} + \ldots
 \end{equation*}
 We use two tricks to get around this problem;
 \begin{enumerate}
-    \item we \emph{linearise} $\nonlin{\lstate}$,
+    \item \emph{linearise} $\nonlin{\lstate}$,
         \begin{equation}
             \nonlin{\lstate} \approx \Linmat\lstate + \intcpt.
             \label{eq:linearize}
         \end{equation}
-    \item we use a \emph{Newton method} to find the posterior mean with the
-        linearized $\tilde\Fengy$,
+    \item find $\pomean$ with a \emph{Newton method} and linearized 
+        $\tilde\Fengy$,
         \begin{equation}
             \pomean_{k+1} = \pomean_k -
             \step\brac{\nabla_\pomean\nabla_\pomean\tilde\Fengy}\inv 
@@ -258,17 +265,17 @@ We use two tricks to get around this problem;
         \end{equation}
 \end{enumerate}
 
-Posterion parameters:
-\begin{align}
-    \pomean_{k+1} &= \brac{1-\step}\pomean_k + \step\prmean 
-        + \step\Kgain_k\brac{\obs - \intcpt_k - \Linmat_k\prmean},
-        \label{eq:pomean} \\
-    \Kgain_k &= \prcov\Linmat_k\transpose\brac{\lcov +
-        \Linmat_k\prcov\Linmat_k\transpose}\inv, 
-        \label{eq:kgain} \\
-    \pocov &= \brac{\ident{D} - \Kgain\Linmat}\!\prcov
-    \label{eq:pocov}
-\end{align}
+%Posterion parameters:
+%\begin{align}
+    %\pomean_{k+1} &= \brac{1-\step}\pomean_k + \step\prmean 
+        %+ \step\Kgain_k\brac{\obs - \intcpt_k - \Linmat_k\prmean},
+        %\label{eq:pomean} \\
+    %\Kgain_k &= \prcov\Linmat_k\transpose\brac{\lcov +
+        %\Linmat_k\prcov\Linmat_k\transpose}\inv, 
+        %\label{eq:kgain} \\
+    %\pocov &= \brac{\ident{D} - \Kgain\Linmat}\!\prcov
+    %\label{eq:pocov}
+%\end{align}
 
 \end{block}
 
@@ -298,13 +305,21 @@ Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed laoreet ac
 %	IMPORTANT RESULT
 %----------------------------------------------------------------------------------------
 
-\begin{alertblock}{Important Result}
+\begin{alertblock}{Key Results}
 
-Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed commodo molestie porta. Sed ultrices scelerisque sapien ac commodo. Donec ut volutpat elit.
+\begin{itemize}
+    \item The unscented Gaussian process does not require any gradients
+        $\partial\nonlin{\lstate}\!/\partial\lstate$ to learn the posterior.
+    \item
+    \item
+\end{itemize}
 
 \end{alertblock} 
 
 %----------------------------------------------------------------------------------------
+
+\vspace{-1.5cm}
+
 
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
 
