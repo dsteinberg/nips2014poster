@@ -27,6 +27,7 @@
 
 \usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
 \usepackage{subfig}
+\usepackage{multirow}
 
 \usetheme{confposter} % Use the confposter theme supplied with this template
 
@@ -127,6 +128,8 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
         $\lstate$, are \textbf{latent}.
     \item We wish to infer these inputs \emph{without} access to the inverse
         system model, $\nonlininv{\cdot}$.
+    \item $\obs$ may be a continuous process or path (robot arm motion), 
+        so $\lstate$ is a \textbf{Gaussian Process}.
 \end{itemize}
 
 \end{alertblock}
@@ -141,9 +144,6 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
     \item The gradients, $\partial{\nonlin{\lstate}} /
         \partial\lstate$, may not be known.
     \item Learning has to be fast (not MCMC).
-    \item $\obs$ may be a continuous process, like the path swept out by a
-        robotic arm, in which case $\lstate$ may be drawn from a 
-        \textbf{Gaussian Process}.
 \end{enumerate}
 
 \end{block}
@@ -162,8 +162,9 @@ Prior on latent functions $\lstate$ at inputs $\Inobs =
 \end{equation}
 Likelihood -- encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$,
 \begin{equation}
-    \probC{\obs}{\lstate} = \gausC{\obs}{\Cline{\nonlin{\lstate}},
-        \lvar\ident{N}}
+    \probC{\obs}{\lstate} = \prod_{n=1}^N 
+        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar}
+    \label{eq:like}
 \end{equation}%
 Inversion = posterior,
 \begin{equation}
@@ -223,7 +224,7 @@ But the marginal likelihood is intractable,
 %	Inference and Linearization
 %------------------------------------------------------------------------------
 
-\begin{block}{Variational Inference \& Linearization}
+\begin{block}{Variational Inference}
 
 In variational inference we can \emph{approximate} the posterior,
 $\probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate} {\pomean,
@@ -250,20 +251,21 @@ intractable quadratic term,
 \end{equation*}
 We use two tricks to get around this problem;
 \begin{enumerate}
-    \item \emph{linearise} $\nonlin{\lstate}$,
+    \item \textbf{linearize} the forward model $\nonlin{\lstate}$,
         \begin{equation}
-            \nonlin{\lstate} \approx \Linmat\lstate + \intcpt.
+            \nonlin{\lstate} \approx \Linmat\lstate + \intcpt
             \label{eq:linearize}
         \end{equation}
-    \item find $\pomean$ with a \emph{Newton method} and linearized 
-        $\tilde\Fengy$,
+    \item \textbf{Newton method} and linearized $\tilde\Fengy$ to
+        find~$\pomean$,
         \begin{equation}
             \pomean_{k+1} = \pomean_k -
             \step\brac{\nabla_\pomean\nabla_\pomean\tilde\Fengy}\inv 
-                \nabla_\pomean\tilde\Fengy,
+                \nabla_\pomean\tilde\Fengy
             \label{eq:newton}
         \end{equation}
 \end{enumerate}
+Then $\pocov$ is found by maximising $\tilde\Fengy$.
 
 %Posterion parameters:
 %\begin{align}
@@ -289,9 +291,27 @@ We use two tricks to get around this problem;
 %	METHODS
 %----------------------------------------------------------------------------------------
 
-\begin{block}{Methods}
+\begin{block}{EGP -- Taylor Series Linearization}
+    
+\begin{figure}
+    \includegraphics[height=14cm]{fig/taylor}
+    \hspace{3cm}
+    \caption{Demonstration of linearizing the forward model, $\nonlin{\cdot}$
+        using a first order Taylor series expansion.}
+\end{figure}        
 
-Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed laoreet accumsan mattis. Integer sapien tellus, auctor ac blandit eget, sollicitudin vitae lorem. Praesent dictum tempor pulvinar. Suspendisse potenti. Sed tincidunt varius ipsum, et porta nulla suscipit et. Etiam congue bibendum felis, ac dictum augue cursus a. \textbf{Donec} magna eros, iaculis sit amet placerat quis, laoreet id est. In ut orci purus, interdum ornare nibh. Pellentesque pulvinar, nibh ac malesuada accumsan, urna nunc convallis tortor, ac vehicula nulla tellus eget nulla. Nullam lectus tortor, \textit{consequat tempor hendrerit} quis, vestibulum in diam. Maecenas sed diam augue.
+First order Taylor series expansion about $\pomean_k$,
+\begin{equation*}
+    \nonlin{\lstate} \approx \nonlin{\pomean_k} +
+    \jacob{\pomean_k}\brac{\lstate - \pomean_k},
+\end{equation*}
+here $\jacob{\pomean_k}$ = $\partial\nonlin{\pomean_k}\!/
+\partial\pomean_k$. Then equating coefficients gives,
+\begin{equation}
+    \Linmat = \jacob{\pomean_k} \quad \text{and} \quad
+    \intcpt = \nonlin{\pomean_k} - \jacob{\pomean_k}\pomean_k.
+\end{equation}
+This results in the \emph{Gauss Newton} method.
 
 \end{block}
 
@@ -308,89 +328,97 @@ Lorem ipsum dolor \textbf{sit amet}, consectetur adipiscing elit. Sed laoreet ac
 \begin{alertblock}{Key Results}
 
 \begin{itemize}
+
     \item The unscented Gaussian process does not require any gradients
         $\partial\nonlin{\lstate}\!/\partial\lstate$ to learn the posterior.
-    \item
-    \item
+
+    \item $\Linmat = \diag{\Lins_0, \ldots, \Lins_N}$ from the factorising
+        likelihood \eqref{eq:like}. Similar complexity as Laplace
+        approximation.
+
+    \item We can also derive the iterative extended and sigma-point Kalman
+        filters using this framework.
 \end{itemize}
 
 \end{alertblock} 
 
-%----------------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
 
 \vspace{-1.5cm}
 
 
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
 
-\begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
+%\begin{column}{\onecolwid} % the first column within column 2 (column 2.1)
+\begin{column}{\twocolwid}
 
-%----------------------------------------------------------------------------------------
-%	MATHEMATICAL SECTION
-%----------------------------------------------------------------------------------------
 
-\begin{block}{Mathematical Section}
+\begin{block}{Experiments}
 
-Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin. Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin.
-  
-\begin{equation}
-E = mc^{2}
-\label{eqn:Einstein}
-\end{equation}
+\begin{columns}
+\column{0.5\twocolwid}
 
-Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin. Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin.
+\begin{table}[tb]
+    \centering
+    \tiny
+    \caption[]{The nonlinear GPs with various differentiable nonlinear functions.}
+    \begin{tabular}{r|c| c c c c c c}
+        \multirow{2}{*}{$\nonlin{\lstate}$} & \multirow{2}{*}{Algorithm} & 
+            \multicolumn{2}{c}{NLPD $\lstates\test$} &
+            \multicolumn{2}{c}{SMSE $\lstates\test$} &
+            \multicolumn{2}{c}{SMSE $\obss\test$} \\
+        & & mean & std. & mean & std. & mean & std.\\
+        \toprule
+        $\lstate$ 
+& UGP & -0.90046 & 0.06743 & 0.01219 & 0.00171 & -- & -- \\
+& EGP & -0.89908 & 0.06608 & 0.01224 & 0.00178 & -- & -- \\
+& \cite{Opper2009} & -0.27590 & 0.06884 & 0.01249 & 0.00159 & -- & -- \\
+& GP & \textbf{-0.90278} & 0.06988 & \textbf{0.01211} & 0.00160 & -- & -- \\
+        \midrule
+        $\lstate^3 + \lstate^2 + \lstate$ 
+& UGP & \textbf{-0.23622} & 1.72609 & 0.01534 & 0.00202 & \textbf{0.02184} & 0.00525 \\
+& EGP & -0.22325 & 1.76231 & \textbf{0.01518} & 0.00203 & \textbf{0.02184} & 0.00528 \\
+& \cite{Opper2009} & -0.14559 & 0.04026 & 0.06733 & 0.01421 & 0.02686 & 0.00266 \\
+        \midrule
+        $\exp\!\brac{\lstate}$ 
+& UGP & -0.75475 & 0.32376 & \textbf{0.13860} & 0.04833 & \textbf{0.03865} & 0.00403 \\
+& EGP & \textbf{-0.75706} & 0.32051 & 0.13971 & 0.04842 & 0.03872 & 0.00411 \\
+& \cite{Opper2009} & -0.08176 & 0.10986 & 0.17614 & 0.04845 & 0.05956 & 0.01070 \\
+        \midrule
+        $\sin\!\brac{\lstate}$ 
+& UGP & \textbf{-0.59710} & 0.22861 & \textbf{0.03305} & 0.00840 & 0.11513 & 0.00521 \\
+& EGP & -0.59705 & 0.21611 & 0.03480 & 0.00791 & \textbf{0.11478} & 0.00532 \\
+& \cite{Opper2009} & -0.04363 & 0.03883 & 0.05913 & 0.01079 & 0.11890 & 0.00652 \\
+        \midrule
+        $\tanh\!\brac{2\lstate}$
+& UGP & \textbf{0.01101} & 0.60256 & \textbf{0.15703} & 0.06077 & \textbf{0.08767} & 0.00292 \\
+& EGP & 0.57403 & 1.25248 & 0.18739 & 0.07869 & 0.08874 & 0.00394 \\
+& \cite{Opper2009} & 0.15743 & 0.14663 & 0.16049 & 0.04563 & 0.09434 & 0.00425 \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:toy}
+\end{table}
 
-\begin{equation}
-\cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-\label{eq:refname}
-\end{equation}
+\column{0.5\twocolwid}
 
-Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin. Nam quis odio enim, in molestie libero. Vivamus cursus mi at nulla elementum sollicitudin.
-
-\begin{equation}
-\kappa =\frac{\xi}{E_{\mathrm{max}}} %\mathbb{ZNR}
-\end{equation}
-
+\end{columns}
 \end{block}
 
-%----------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.1
 
-\begin{column}{\onecolwid} % The second column within column 2 (column 2.2)
+%\begin{column}{\onecolwid} % The second column within column 2 (column 2.2)
 
-%----------------------------------------------------------------------------------------
-%	RESULTS
-%----------------------------------------------------------------------------------------
 
-\begin{block}{Results}
 
-\begin{figure}
-\includegraphics[width=0.8\linewidth]{fig/placeholder.jpg}
-\caption{Figure caption}
-\end{figure}
+%\begin{block}{Experiments}
 
-Nunc tempus venenatis facilisis. Curabitur suscipit consequat eros non porttitor. Sed a massa dolor, id ornare enim:
+%\end{block}
 
-\begin{table}
-\vspace{2ex}
-\begin{tabular}{l l l}
-\toprule
-\textbf{Treatments} & \textbf{Response 1} & \textbf{Response 2}\\
-\midrule
-Treatment 1 & 0.0003262 & 0.562 \\
-Treatment 2 & 0.0015681 & 0.910 \\
-Treatment 3 & 0.0009271 & 0.296 \\
-\bottomrule
-\end{tabular}
-\caption{Table caption}
-\end{table}
-
-\end{block}
 
 %----------------------------------------------------------------------------------------
 
-\end{column} % End of column 2.2
+%\end{column} % End of column 2.2
 
 \end{columns} % End of the split of column 2
 
@@ -401,29 +429,51 @@ Treatment 3 & 0.0009271 & 0.296 \\
 \begin{column}{\onecolwid} % The third column
 
 %----------------------------------------------------------------------------------------
-%	CONCLUSION
-%----------------------------------------------------------------------------------------
 
-\begin{block}{Conclusion}
+\begin{block}{UGP -- Unscented Transform}
 
-Nunc tempus venenatis facilisis. \textbf{Curabitur suscipit} consequat eros non porttitor. Sed a massa dolor, id ornare enim. Fusce quis massa dictum tortor \textbf{tincidunt mattis}. Donec quam est, lobortis quis pretium at, laoreet scelerisque lacus. Nam quis odio enim, in molestie libero. Vivamus cursus mi at \textit{nulla elementum sollicitudin}.
+\begin{figure}
+    \includegraphics[height=14cm]{fig/statlin}
+    \caption{Demonstration of linearizing the foward model, $\nonlin{\cdot}$
+        using the unscented transform.}
+\end{figure}        
+
+Make sigma points \cite{Julier2004}, $\Sfunc_i$ and $\Sobs_i$, then solving a
+linear regression problem,
+\begin{equation*}
+    \argmin_{\Linmat, \intcpt} \sum^{2D}_{i=0} 
+        \lnorm{2}{\Sobs_i - \brac{\Linmat\Sfunc_i + \intcpt}}^2
+\end{equation*}
+gives,
+\begin{equation}
+    \Linmat = \xcov \pocov\inv \quad \text{and} \quad
+    \intcpt = \bar\obs - \Linmat\pomean,
+\end{equation}
+and $\xcov$ is the cross-covariance between $\Sfunc_i$ and~$\Sobs_i$.
 
 \end{block}
 
-%----------------------------------------------------------------------------------------
-%	ADDITIONAL INFORMATION
-%----------------------------------------------------------------------------------------
 
-\begin{block}{Additional Information}
+\begin{block}{Kernel Hyperparameters}
 
-Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius dictum. 
+Learning the hyperparameters, $\khypers$ in $\kernl\!\brac{\inobs,
+    \inobs'|\khypers}$ is usually this is done by optimising $\khypers^* =
+\argmax_{\khypers}\Fengy$,%
 \begin{itemize}
-\item Curabitur pellentesque dignissim
-\item Eu facilisis est tempus quis
-\item Duis porta consequat lorem
+    \item But $\pomean$ is an implicit function of $\khypers$,
+    \item So $\nabla_{\khypers}\Fengy$ also requires various derivatives of
+        $\nonlin{\cdot}$.
 \end{itemize}
+\emph{Solution}: numerical gradient methods (NLopt) work well -- for
+a few hyperparameters.
 
 \end{block}
+
+
+%\begin{block}{Conclusion}
+
+
+%\end{block}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCES
@@ -443,40 +493,32 @@ Maecenas ultricies feugiat velit non mattis. Fusce tempus arcu id ligula varius 
 
 %\setbeamercolor{block title}{fg=red,bg=white} % Change the block title color
 
-\begin{block}{Acknowledgements}
+%\begin{block}{Acknowledgements}
 
-\footnotesize{\rmfamily{This research was supported by the Science Industry Endowment
-        Fund (RP 04-174) Big Data Knowledge Discovery project. NICTA is funded
-        by the Australian Government through the Department of Communications
-        and the Australian Research Council through the ICT Centre of
-        Excellence Program.}} \\
+%\footnotesize{\rmfamily{This research was supported by the Science Industry Endowment
+        %Fund (RP 04-174) Big Data Knowledge Discovery project. NICTA is funded
+        %by the Australian Government through the Department of Communications
+        %and the Australian Research Council through the ICT Centre of
+        %Excellence Program.}} \\
 
-\end{block}
+%\end{block}
+
 
 %----------------------------------------------------------------------------------------
-%	CONTACT INFORMATION
+%	Additional INFORMATION
 %----------------------------------------------------------------------------------------
 
 \setbeamercolor{block alerted title}{fg=white,bg=npurple!62} % Change the alert block title colors
 \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
 
-\begin{alertblock}{Contact Information}
+\begin{alertblock}{Additional Information}
 
 \begin{itemize}
-\item Web: \href{http://www.university.edu/smithlab}{http://www.university.edu/smithlab}
-\item Email: \href{mailto:john@smith.com}{john@smith.com}
-\item Phone: +1 (000) 111 1111
+\item Code: \href{https://github.com/NICTA/linearizedGP}
+                 {https://github.com/NICTA/linearizedGP}
 \end{itemize}
 
 \end{alertblock}
-
-\begin{center}
-\begin{tabular}{ccc}
-\includegraphics[width=0.3\linewidth]{fig/logo-nicta}
-\hspace{3cm}
-\includegraphics[width=0.3\linewidth]{fig/logo-unsw}
-\end{tabular}
-\end{center}
 
 %----------------------------------------------------------------------------------------
 
