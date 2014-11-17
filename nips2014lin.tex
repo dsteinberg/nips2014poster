@@ -70,6 +70,9 @@
 
 \usepackage{graphicx}  % Required for including images
 \usepackage{booktabs} % Top and bottom rules for tables
+\usepackage{setspace}
+\usepackage{caption}
+\captionsetup{font={stretch=0.5}}
 
 
 \input{notation}
@@ -99,8 +102,8 @@
 \addtobeamertemplate{block end}{}{\vspace*{2ex}} % White space under blocks
 \addtobeamertemplate{block alerted end}{}{\vspace*{2ex}} % White space under highlighted (alert) blocks
 
-\setlength{\belowcaptionskip}{2ex} % White space under figures
-\setlength\belowdisplayshortskip{2ex} % White space under equations
+%\setlength{\belowcaptionskip}{2ex} % White space under figures
+%\setlength\belowdisplayshortskip{2ex} % White space under equations
 
 \begin{frame}[t] % The whole poster is enclosed in one beamer frame
 
@@ -360,8 +363,8 @@ This results in the \emph{Gauss Newton} method.
 
 \begin{table}[tb]
     \centering
-    \tiny
     \caption[]{The nonlinear GPs with various differentiable nonlinear functions.}
+    \tiny
     \begin{tabular}{r|c| c c c c c c}
         \multirow{2}{*}{$\nonlin{\lstate}$} & \multirow{2}{*}{Algorithm} & 
             \multicolumn{2}{c}{NLPD $\lstates\test$} &
@@ -400,6 +403,14 @@ This results in the \emph{Gauss Newton} method.
 \end{table}
 
 \column{0.5\twocolwid}
+
+\begin{figure}
+    \includegraphics[width=0.7\onecolwid]{fig/signdemo.png}
+    \caption[]{Learning the UGP with the forward model, $\nonlin{\lstate} = 
+            2\times\text{sign}\!\brac{\lstate} + \lstate^3$. This function does
+            not have derivatives at the zero crossing points.}
+   \label{fig:sign}
+\end{figure}
 
 \end{columns}
 \end{block}
