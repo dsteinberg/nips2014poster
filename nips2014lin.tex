@@ -25,7 +25,7 @@
 
 \documentclass[final]{beamer}
 
-\usepackage[scale=1.24]{beamerposter} % Use the beamerposter package for laying out the poster
+\usepackage[scale=1.15]{beamerposter} % Use the beamerposter package for laying out the poster
 \usepackage{subfig}
 \usepackage{multirow}
 
@@ -70,11 +70,8 @@
 
 \usepackage{graphicx}  % Required for including images
 \usepackage{booktabs} % Top and bottom rules for tables
-\usepackage{setspace}
-\usepackage{caption}
-\captionsetup{font={stretch=0.5}}
 
-
+% Variables and math notation
 \input{notation}
 
 % Red underline
@@ -165,11 +162,13 @@ Prior on latent functions $\lstate$ at inputs $\Inobs =
 \end{equation}
 Likelihood -- encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$,
 \begin{equation}
-    \probC{\obs}{\lstate} = \prod_{n=1}^N 
+    \probC{\obs}{\lstate}
+    = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}
+    = \prod_{n=1}^N 
         \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar}
     \label{eq:like}
 \end{equation}%
-Inversion = posterior,
+Inverse solution is the posterior,
 \begin{equation}
     \probC{\lstate}{\obs} = \frac{\probC{\obs}{\lstate}\prob{\lstate}}
         {\prob{\obs}}
@@ -188,7 +187,7 @@ But the marginal likelihood is intractable,
 %	Nonlinear Gaussian Models
 %------------------------------------------------------------------------------
 
-\vspace{-1.5cm}
+%\vspace{-1.5cm}
 \begin{figure}
     %\subfloat[][]{
         %\vspace{-2cm}
@@ -359,7 +358,9 @@ This results in the \emph{Gauss Newton} method.
 \begin{block}{Experiments}
 
 \begin{columns}
-\column{0.5\twocolwid}
+\begin{column}{0.38\twocolwid}
+
+\textbf{Toy inversion problems} -- something about this experiment...
 
 \begin{table}[tb]
     \centering
@@ -402,16 +403,49 @@ This results in the \emph{Gauss Newton} method.
     \label{tab:toy}
 \end{table}
 
-\column{0.5\twocolwid}
+\end{column}
+\begin{column}{0.29\twocolwid}\vspace{-.8in}
 
 \begin{figure}
-    \includegraphics[width=0.7\onecolwid]{fig/signdemo.png}
+    \includegraphics[width=0.6\onecolwid]{fig/signdemo.png}
     \caption[]{Learning the UGP with the forward model, $\nonlin{\lstate} = 
             2\times\text{sign}\!\brac{\lstate} + \lstate^3$. This function does
             not have derivatives at the zero crossing points.}
    \label{fig:sign}
 \end{figure}
 
+\end{column}
+\begin{column}{0.29\twocolwid}\vspace{-1.8in}
+
+\textbf{Binary classification} -- something about this experiment too ...
+
+\begin{table}[tb]
+    \centering
+    \caption[]{Classification performance on the USPS handwritten-digits
+        dataset for numbers `3' and `5'.}
+    \tiny
+    \begin{tabular}{r| c c c c}
+    Algorithm & NLP $\obss\test$ & Error rate (\%) 
+        & $\log\!\brac{\sigma_\text{se}}$ & $\log\!\brac{l_\text{se}}$ \\
+    \toprule
+    GP -- Laplace & 0.11528 & 2.9754 & 2.5855 & 2.5823 \\
+    GP -- EP & 0.07522 & 2.4580 & 5.2209 & 2.5315 \\
+    GP -- VB & 0.10891 & 3.3635 & 0.9045 & 2.0664 \\ 
+    SVM (RBF) & 0.08055 & 2.3286 & -- & -- \\
+    Logistic Reg. & 0.11995 & 3.6223 & -- & -- \\
+    \midrule
+    UGP & \textbf{0.07290} & \textbf{1.9405} & 1.5743 & 1.5262 \\
+    EGP & 0.08051 & 2.1992 & 2.9134 & 1.7872 \\
+    %UGP & 0.06524 & 2.1992 & 1.5140 & 1.4257 \\
+    %EGP & 0.12946 & 2.0699 & 3.3068 & 1.7480 \\
+    \bottomrule
+    \end{tabular}
+    \label{tab:class}
+\end{table}
+
+\vfill
+
+\end{column}
 \end{columns}
 \end{block}
 
@@ -449,8 +483,8 @@ This results in the \emph{Gauss Newton} method.
         using the unscented transform.}
 \end{figure}        
 
-Make sigma points \cite{Julier2004}, $\Sfunc_i$ and $\Sobs_i$, then solving a
-linear regression problem,
+Make sigma points \cite{Julier2004, Geist2010}, $\Sfunc_i$ and $\Sobs_i$, then
+solving a linear regression problem,
 \begin{equation*}
     \argmin_{\Linmat, \intcpt} \sum^{2D}_{i=0} 
         \lnorm{2}{\Sobs_i - \brac{\Linmat\Sfunc_i + \intcpt}}^2
@@ -468,14 +502,14 @@ and $\xcov$ is the cross-covariance between $\Sfunc_i$ and~$\Sobs_i$.
 \begin{block}{Kernel Hyperparameters}
 
 Learning the hyperparameters, $\khypers$ in $\kernl\!\brac{\inobs,
-    \inobs'|\khypers}$ is usually this is done by optimising $\khypers^* =
+    \inobs'|\khypers}$, is usually an optimisation $\khypers^* =
 \argmax_{\khypers}\Fengy$,%
 \begin{itemize}
-    \item But $\pomean$ is an implicit function of $\khypers$,
-    \item So $\nabla_{\khypers}\Fengy$ also requires various derivatives of
+    \item but $\pomean$ is an implicit function of $\khypers$,
+    \item so $\nabla_{\khypers}\Fengy$ also requires various derivatives of
         $\nonlin{\cdot}$.
 \end{itemize}
-\emph{Solution}: numerical gradient methods (NLopt) work well -- for
+\emph{Solution}: numerical gradient methods (BOBYQA in NLopt) work well -- for
 a few hyperparameters.
 
 \end{block}
@@ -522,13 +556,11 @@ a few hyperparameters.
 \setbeamercolor{block alerted title}{fg=white,bg=npurple!62} % Change the alert block title colors
 \setbeamercolor{block alerted body}{fg=black,bg=white} % Change the alert block body colors
 
-\begin{alertblock}{Additional Information}
+\vspace{-2cm}
+\begin{alertblock}{Code}
 
-\begin{itemize}
-\item Code: \href{https://github.com/NICTA/linearizedGP}
+Github -- \href{https://github.com/NICTA/linearizedGP}
                  {https://github.com/NICTA/linearizedGP}
-\end{itemize}
-
 \end{alertblock}
 
 %----------------------------------------------------------------------------------------
@@ -540,3 +572,14 @@ a few hyperparameters.
 \end{frame} % End of the enclosing frame
 
 \end{document}
+
+
+%%% MAYBE TODO:
+% - Flesh out experiments captions
+% - Make sure the linearization descriptions are 1d, they are not right now!
+% - Make the figures demonstrating the linearization more reflective of the GP
+%   (i.e. multiple linearization)
+% - Add in posterior parameter update equations?
+% - Add in prediction equations?
+% - Make the equations reflect the 1-D linearizations?
+% - Make A and b red to clarify their importance?
