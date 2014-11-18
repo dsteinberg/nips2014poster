@@ -298,7 +298,7 @@ Then $\pocov$ is found by maximising $\tilde\Fengy$.
 \begin{block}{EGP -- Taylor Series Linearization}
     
 \begin{figure}
-    \includegraphics[height=14cm]{fig/taylor}
+    \includegraphics[height=14cm]{fig/taylor_gp}
     \hspace{3cm}
     \caption{Demonstration of linearizing the forward model, $\nonlin{\cdot}$
         using a first order Taylor series expansion.}
@@ -306,15 +306,21 @@ Then $\pocov$ is found by maximising $\tilde\Fengy$.
 
 First order Taylor series expansion about $\pomean_k$,
 \begin{equation*}
-    \nonlin{\lstate} \approx \nonlin{\pomean_k} +
-    \jacob{\pomean_k}\brac{\lstate - \pomean_k},
+    \nonlin{\lstates_n} \approx \nonlin{\pomeans_{nk}} +
+        \jacobs{\pomeans_{nk}}
+        \brac{\lstates_n - \pomeans_{nk}},
 \end{equation*}
-here $\jacob{\pomean_k}$ = $\partial\nonlin{\pomean_k}\!/
-\partial\pomean_k$. Then equating coefficients gives,
-\begin{equation}
-    \Linmat = \jacob{\pomean_k} \quad \text{and} \quad
-    \intcpt = \nonlin{\pomean_k} - \jacob{\pomean_k}\pomean_k.
-\end{equation}
+and $\jacobs{\pomeans_{nk}} = 
+    \partial\nonlin{\pomeans_{nk}}\!/\partial\pomeans_{nk}$. Then equating 
+coefficients,
+\begin{align*}
+    \Linmat_k &= \diag{\sbrac{\jacobs{\pomeans_{0k}}, \ldots,
+        \jacobs{\pomeans_{Nk}}}}, \\
+    \intcpt_k &= \sbrac{\nonlin{\pomeans_{0k}} - 
+            \jacobs{\pomeans_{0k}}\pomeans_{0k}, \ldots,
+            \nonlin{\pomeans_{Nk}} - \jacobs{\pomeans_{Nk}}\pomeans_{Nk}}
+            \transpose.
+\end{align*}
 This results in the \emph{Gauss Newton} method.
 
 \end{block}
@@ -336,8 +342,8 @@ This results in the \emph{Gauss Newton} method.
     \item The unscented Gaussian process does not require any gradients
         $\partial\nonlin{\lstate}\!/\partial\lstate$ to learn the posterior.
 
-    \item $\Linmat = \diag{\Lins_0, \ldots, \Lins_N}$ from the factorising
-        likelihood \eqref{eq:like}. Similar complexity as Laplace
+    \item $\Linmat = \diag{\sbrac{\Lins_0, \ldots, \Lins_N}}$ from the 
+        factorising likelihood \eqref{eq:like}. Similar complexity as Laplace
         approximation.
 
     \item We can also derive the iterative extended and sigma-point Kalman
