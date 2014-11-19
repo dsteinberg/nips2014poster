@@ -170,7 +170,8 @@ Likelihood -- encodes $\obs = \nonlin{\lstate} + \boldsymbol{\epsilon}$,
         \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar}
     \label{eq:like}
 \end{equation}%
-Inverse solution is the posterior,
+To solve the inverse problem we simply use Bayes' rule to calculate the
+posterior,
 \begin{equation}
     \probC{\lstate}{\obs} = \frac{\probC{\obs}{\lstate}\prob{\lstate}}
         {\prob{\obs}}
@@ -230,9 +231,12 @@ But the marginal likelihood is intractable,
 
 \begin{block}{Variational Inference}
 
-In variational inference we can \emph{approximate} the posterior,
-$\probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate} {\pomean,
-    \pocov}$, and then establish as \emph{lower bound} on the log marginal
+In variational inference we \emph{approximate} the posterior,
+\begin{equation}
+    \probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate} {\pomean,
+    \pocov},
+\end{equation}
+and then establish as \emph{lower bound} on the log marginal
 likelihood,
 \begin{equation}
     \Fengy = \expec{q\lstate}{\log \probC{\obs}{\lstate}}
@@ -245,8 +249,8 @@ Then we use $\Fengy$ to \emph{optimise} posterior parameters:
     \pocov^* = \argmax_\pocov{\Fengy},
 \end{equation}
 where $\qrob{\lstate}$ should approach the true posterior
-$\probC{\lstate}{\obs}$. \emph{But}, the expected log likelihood has an
-intractable quadratic term,
+$\probC{\lstate}{\obs}$. \emph{But}, the expected log likelihood is still 
+intractable,
 \begin{equation*}
     \expec{q\lstate}{\log \probC{\obs}{\lstate}} = 
     -\frac{1}{2\lvar} \expec{q\lstate}{
@@ -313,14 +317,14 @@ First order Taylor series expansion about $\pomean_k$,
 and $\jacobs{\pomeans_{nk}} = 
     \partial\nonlin{\pomeans_{nk}}\!/\partial\pomeans_{nk}$. Then equating 
 coefficients,
-\begin{align*}
+\begin{align}
     \Linmat_k &= \diag{\sbrac{\jacobs{\pomeans_{0k}}, \ldots,
         \jacobs{\pomeans_{Nk}}}}, \\
     \intcpt_k &= \sbrac{\nonlin{\pomeans_{0k}} - 
             \jacobs{\pomeans_{0k}}\pomeans_{0k}, \ldots,
             \nonlin{\pomeans_{Nk}} - \jacobs{\pomeans_{Nk}}\pomeans_{Nk}}
-            \transpose.
-\end{align*}
+            \transpose. \nonumber
+\end{align}
 This results in the \emph{Gauss Newton} method.
 
 \end{block}
@@ -342,9 +346,9 @@ This results in the \emph{Gauss Newton} method.
     \item The unscented Gaussian process does not require any gradients
         $\partial\nonlin{\lstate}\!/\partial\lstate$ to learn the posterior.
 
-    \item $\Linmat = \diag{\sbrac{\Lins_0, \ldots, \Lins_N}}$ from the 
-        factorising likelihood \eqref{eq:like}. Similar complexity as Laplace
-        approximation.
+    \item $\Linmat$ is a \emph{diagonal} matrix because of the factorising
+        likelihood in \eqref{eq:like} -- so similar complexity as Laplace
+        approx.
 
     \item We can also derive the iterative extended and sigma-point Kalman
         filters using this framework.
@@ -368,11 +372,19 @@ This results in the \emph{Gauss Newton} method.
 \begin{columns}
 \begin{column}{0.38\twocolwid}
 
-\textbf{Toy inversion problems} -- something about this experiment...
+\textbf{Toy inversion problems}
 
 \begin{table}[tb]
     \centering
-    \caption[]{The nonlinear GPs with various differentiable nonlinear functions.}
+
+    \caption[]{The EGP, UGP and a competing method~\cite{Opper2009} with
+        various differentiable forward functions in the likelihood. The aim is
+        to estimate the `true' latent function, $\lstate$, from noisy
+        transformed observations, $\obs$, only given the forward
+        transformation $\nonlin{\cdot}$. The UGP and EGP have similar
+        perfomance, and outperform \cite{Opper2009}}
+
+    \vspace{5mm}
     \tiny
     \begin{tabular}{r|c| c c c c c c}
         \multirow{2}{*}{$\nonlin{\lstate}$} & \multirow{2}{*}{Algorithm} & 
@@ -412,26 +424,46 @@ This results in the \emph{Gauss Newton} method.
 \end{table}
 
 \end{column}
-\begin{column}{0.29\twocolwid}\vspace{-.8in}
+\begin{column}{0.29\twocolwid}%\vspace{-.8in}
 
 \begin{figure}
     \includegraphics[width=0.6\onecolwid]{fig/signdemo.png}
-    \caption[]{Learning the UGP with the forward model, $\nonlin{\lstate} = 
-            2\times\text{sign}\!\brac{\lstate} + \lstate^3$. This function does
-            not have derivatives at the zero crossing points.}
+
+    \caption[]{Learning the UGP with the forward model, $\nonlin{\lstate} =
+        2\times\text{sign}\!\brac{\lstate} + \lstate^3$. This function
+        \emph{has no derivatives},
+        $\partial\nonlin{\lstate}\!/\partial\lstate$, at the zero crossing
+        points. The black dots are the training data, $\cbrac{\inobs_n,
+            \obss_n}^N_{n=1}$, used to learn the posterior parameters and
+        hyperparameters. The blue line is the `true' latent process,
+        $\lstate$, and the dashed red line is the predicted value of this
+        latent process. The green line is the predicted values of the
+        observations, $\obs\test$.}
+
    \label{fig:sign}
 \end{figure}
 
 \end{column}
-\begin{column}{0.29\twocolwid}\vspace{-1.8in}
+\begin{column}{0.29\twocolwid}%\vspace{-1.8in}
 
-\textbf{Binary classification} -- something about this experiment too ...
+\textbf{Binary classification}
 
 \begin{table}[tb]
     \centering
-    \caption[]{Classification performance on the USPS handwritten-digits
-        dataset for numbers `3' and `5'.}
-    \tiny
+
+    \caption[]{We can also use the EGP and UGP for \emph{classification}
+        problems. We just require a logistic sigmoid forward function,
+        $\nonlin{\lstate} = \frac{1}{1+\exp\brac{-\lstate}}$. Here we
+        demonstrate the algorithms on the USPS handwritten-digits dataset for
+        numbers `3' and `5'. We compare to other classifiers, including GP
+        classifiers derived \emph{specifically} for this task. 
+        %Initialising
+        %the observations noise, $\lvar$, to a small value ($10^{-14}$) improves
+        %our GPs' performance.
+    }
+
+    \vspace{5mm}
+    \scriptsize
     \begin{tabular}{r| c c c c}
     Algorithm & NLP $\obss\test$ & Error rate (\%) 
         & $\log\!\brac{\sigma_\text{se}}$ & $\log\!\brac{l_\text{se}}$ \\
@@ -486,23 +518,26 @@ This results in the \emph{Gauss Newton} method.
 \begin{block}{UGP -- Unscented Transform}
 
 \begin{figure}
-    \includegraphics[height=14cm]{fig/statlin}
-    \caption{Demonstration of linearizing the foward model, $\nonlin{\cdot}$
+    \includegraphics[height=14cm]{fig/statlin_gp}
+    \caption{Demonstration of linearizing the forward model, $\nonlin{\cdot}$
         using the unscented transform.}
 \end{figure}        
 
-Make sigma points \cite{Julier2004, Geist2010}, $\Sfunc_i$ and $\Sobs_i$, then
-solving a linear regression problem,
+Make sigma points \cite{Julier2004, Geist2010} $\Sfunc_{ni}$ and $\Sobs_{ni}$,
+then solving $N$ scalar linear regression problems,
 \begin{equation*}
-    \argmin_{\Linmat, \intcpt} \sum^{2D}_{i=0} 
-        \lnorm{2}{\Sobs_i - \brac{\Linmat\Sfunc_i + \intcpt}}^2
+    \argmin_{\Lins_{nk}, \intcpts_{nk}} \sum^{3}_{i=0} 
+        \lnorm{2}{\Sobs_{ni} - \brac{\Lins_{nk}\Sfunc_{ni} + \intcpts_{nk}}}^2
 \end{equation*}
 gives,
-\begin{equation}
-    \Linmat = \xcov \pocov\inv \quad \text{and} \quad
-    \intcpt = \bar\obs - \Linmat\pomean,
-\end{equation}
-and $\xcov$ is the cross-covariance between $\Sfunc_i$ and~$\Sobs_i$.
+\begin{align}
+    \Linmat_k &= \diag{\sbrac{\Lins_{0k}, \ldots, \Lins_{Nk}}}, \\
+    \intcpt_k &= \sbrac{\bar\obss_{0} - \Lins_{0k}\pomeans_{0k}, \ldots,
+        \bar\obss_{N} - \Lins_{Nk}\pomeans_{Nk}}\transpose. \nonumber
+\end{align}
+Here $\Lins_{nk} = \xcovs_{\obss\pomeans,nk} \pocovs_{nnk}\inv$ and 
+$\xcovs_{\obss\pomeans,nk}$ is the cross-covariance between $\Sfunc_{ni}$ 
+and~$\Sobs_{ni}$ $\forall i$.
 
 \end{block}
 
@@ -517,8 +552,7 @@ Learning the hyperparameters, $\khypers$ in $\kernl\!\brac{\inobs,
     \item so $\nabla_{\khypers}\Fengy$ also requires various derivatives of
         $\nonlin{\cdot}$.
 \end{itemize}
-\emph{Solution}: numerical gradient methods (BOBYQA in NLopt) work well -- for
-a few hyperparameters.
+\emph{Solution}: numerical gradient methods (BOBYQA).
 
 \end{block}
 
