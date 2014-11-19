@@ -1,0 +1,114 @@
+% Copyright National ICT Australia 2005-2012
+%	Author : Anthony Mak
+%                Olivier Mehani
+%		 William Uther
+%
+% This program can be redistributed and/or modified under the terms
+% of the LaTeX Project Public License Distributed from CTAN
+% archives in directory macros/latex/base/lppl.txt.
+
+% If this template does not work, please check you have installed these.
+% Required latex packages :-
+%		Beamer class version 3.00 or higher
+%		pgf version 0.63 or higher
+%		xcolor version 2.00 or higher
+%		(For details please read Beamer User Guide section 2.1 )
+% Required NICTA Beamer Template files :-
+%		(Make sure to include the following files in your TeX path)
+%			beamerfontthemeNICTA.sty
+%			beamercolorthemeNICTA.sty
+%			beamercolorthemeNICTAsidebar.sty
+%			beamerinnerthemeNICTA.sty
+%			beamerouterthemeNICTA.sty
+%			beamerthemeNICTA.sty
+
+% /*** NO NEED TO MODIFY ***
+\documentclass{beamer}
+%\usetheme{NICTA}
+%\usetheme[pagenum=false]{NICTA}
+
+\usetheme[sidebar=false]{NICTA}
+
+\usepackage[australian]{babel}
+\usepackage{times}
+\usepackage{xcolor}
+\usepackage{booktabs,graphicx,multirow}
+\usepackage{subcaption}
+\captionsetup{compatibility=false}
+
+% *** NO NEED TO MODIFY ***/
+\usepackage[utf8]{inputenc}
+
+%\usepackage{tikz}
+%\usetikzlibrary{arrows, backgrounds, positioning, fit}
+
+
+% *** Other stuff like notation ***/
+\input{notation}
+
+\newsavebox\MBox
+\newcommand\Cline[2][red]{{\sbox\MBox{$#2$}%
+  \rlap{\usebox\MBox}\color{#1}\rule[-1.6\dp\MBox]{\wd\MBox}{0.7pt}}}
+
+\begin{document}
+
+%%%%% TITLE SLIDE %%%%%
+
+\title{Extended and Unscented Gaussian Processes}
+\author{\textit{Daniel M.\ Steinberg}\textsuperscript{1} and
+        Edwin V.\ Bonilla\textsuperscript{2}}
+
+\institute{\textsuperscript{1}NICTA, 
+           \textsuperscript{2}The University of New South Wales} % Institution(s)
+\date{}
+
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+%%%%% FIRST SLIDE %%%%%
+
+\begin{frame}
+    \frametitle{Inverse Problems}
+
+Many problems in science and engineering have some \textbf{forward} or system
+model, $\nonlin{\cdot}$, which is often nonlinear:
+\begin{equation*}
+    \obs = \nonlin{\lstate} + \boldsymbol\epsilon
+\end{equation*}
+\vspace{-7mm}
+\begin{columns}
+
+\begin{column}{0.5\linewidth}
+\footnotesize
+\vspace{-5mm}
+
+\begin{itemize}
+    \item We can measure the outputs of the system, $\obs$, but the inputs,
+        $\lstate$, are \textbf{latent}.
+    \item We wish to infer these inputs \emph{without} access to the inverse
+        system model, $\nonlininv{\cdot}$.
+    \item $\obs$ may be a continuous process or path (robot arm motion), 
+        so $\lstate$ is a \textbf{Gaussian Process}.
+\end{itemize}
+
+\end{column}
+
+\begin{column}{0.5\linewidth}
+
+\begin{figure}
+    \includegraphics[width=\linewidth]{fig/polydemo}
+    \caption{...}
+\end{figure}
+
+\end{column}
+\end{columns}
+
+\emph{Problem}: Nonlinearities in a GP likelihood lead to intractable
+inference.
+
+\end{frame}
+
+
+\end{document}
