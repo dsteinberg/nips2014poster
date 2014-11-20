@@ -33,7 +33,7 @@
 \usepackage{times}
 \usepackage{xcolor}
 \usepackage{booktabs,graphicx,multirow}
-\usepackage{subcaption}
+\usepackage[font={footnotesize}]{caption}
 \captionsetup{compatibility=false}
 
 % *** NO NEED TO MODIFY ***/
@@ -52,14 +52,14 @@
 
 \begin{document}
 
+
 %%%%% TITLE SLIDE %%%%%
 
 \title{Extended and Unscented Gaussian Processes}
-\author{\textit{Daniel M.\ Steinberg}\textsuperscript{1} and
-        Edwin V.\ Bonilla\textsuperscript{2}}
+\author{\textit{Daniel M.\ Steinberg} and
+        Edwin V.\ Bonilla}
 
-\institute{\textsuperscript{1}NICTA, 
-           \textsuperscript{2}The University of New South Wales} % Institution(s)
+\institute{NICTA and The University of New South Wales} % Institution(s)
 \date{}
 
 
@@ -67,17 +67,18 @@
     \titlepage
 \end{frame}
 
+
 %%%%% FIRST SLIDE %%%%%
 
 \begin{frame}
     \frametitle{Inverse Problems}
 
-Many problems in science and engineering have some \textbf{forward} or system
+Many problems in science and engineering have some \textbf{forward} 
 model, $\nonlin{\cdot}$, which is often nonlinear:
 \begin{equation*}
     \obs = \nonlin{\lstate} + \boldsymbol\epsilon
 \end{equation*}
-\vspace{-7mm}
+\vspace{-8mm}
 \begin{columns}
 
 \begin{column}{0.5\linewidth}
@@ -88,7 +89,7 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
     \item We can measure the outputs of the system, $\obs$, but the inputs,
         $\lstate$, are \textbf{latent}.
     \item We wish to infer these inputs \emph{without} access to the inverse
-        system model, $\nonlininv{\cdot}$.
+        model, $\nonlininv{\cdot}$.
     \item $\obs$ may be a continuous process or path (robot arm motion), 
         so $\lstate$ is a \textbf{Gaussian Process}.
 \end{itemize}
@@ -98,17 +99,99 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
 \begin{column}{0.5\linewidth}
 
 \begin{figure}
-    \includegraphics[width=\linewidth]{fig/polydemo}
-    \caption{...}
+    \includegraphics[width=0.85\linewidth]{fig/polydemo}
+    \caption{Example of inferring a latent function, $\lstate$, from
+        transformed and noisy realisations, $\obs$. Here $\nonlin{\lstate} =
+        \lstate^3 + \lstate^2 + \lstate$.}
 \end{figure}
 
 \end{column}
 \end{columns}
 
-\emph{Problem}: Nonlinearities in a GP likelihood lead to intractable
-inference.
+\emph{Problem}: Nonlinearities in the likelihood $\rightarrow$ 
+\emph{intractable} posterior $\probC{\lstate}{\obs}$.
+\vspace{3mm}
+
 
 \end{frame}
 
+
+%%%%% SECOND SLIDE %%%%%
+
+\begin{frame}
+    \frametitle{Overview and Key Results}
+
+
+\vspace{-7mm}
+\begin{columns}
+
+\begin{column}{0.45\linewidth}
+
+Extended and unscented GPs,
+\begin{itemize}
+    \footnotesize
+    \item Use \emph{variational inference} to learn an approx.\ posterior 
+        $\qrob{\lstate}$,
+    \item with \emph{Newton method} with linearization
+        $\nonlin{\lstate} \approx \Linmat\lstate + \intcpt$;
+    \begin{itemize}
+        \footnotesize
+        \item[EGP] 1\textsuperscript{st} order Taylor expansion
+        \item[UGP] Unscented transform
+    \end{itemize}
+\end{itemize}
+
+\vspace{2mm}
+Some properties,
+\begin{enumerate}
+    \footnotesize
+    \item No re-derivation needed for each new $\nonlin{\cdot}$,
+    \item UGP does not require $\partial\nonlin{\lstate}\!/\partial{\lstate}$!
+\end{enumerate}
+
+\end{column}
+
+\begin{column}{0.55\linewidth}
+
+\begin{figure}
+    \includegraphics[width=0.75\linewidth]{fig/signdemo}
+
+    \caption{The UGP with $\nonlin{\lstate} =
+        2\times\text{sign}\!\brac{\lstate} + \lstate^3$.}
+
+\end{figure}
+
+\vspace{-1cm}
+
+\begin{table}[tb]
+    \centering
+    \caption[]{Binary class.\ on USPS handwritten digits.}
+    \tiny
+    \vspace{-3mm}
+    \begin{tabular}{r| c c c c}
+    Algorithm & NLP $\obss\test$ & Error rate (\%) 
+        & $\log\!\brac{\sigma_\text{se}}$ & $\log\!\brac{l_\text{se}}$ \\
+    \toprule
+    GP -- Laplace & 0.11528 & 2.9754 & 2.5855 & 2.5823 \\
+    GP -- EP & 0.07522 & 2.4580 & 5.2209 & 2.5315 \\
+    GP -- VB & 0.10891 & 3.3635 & 0.9045 & 2.0664 \\ 
+    SVM (RBF) & 0.08055 & 2.3286 & -- & -- \\
+    Logistic Reg. & 0.11995 & 3.6223 & -- & -- \\
+    \midrule
+    UGP & \emph{0.07290} & \emph{1.9405} & 1.5743 & 1.5262 \\
+    EGP & 0.08051 & 2.1992 & 2.9134 & 1.7872 \\
+    %UGP & 0.06524 & 2.1992 & 1.5140 & 1.4257 \\
+    %EGP & 0.12946 & 2.0699 & 3.3068 & 1.7480 \\
+    \bottomrule
+    \end{tabular}
+    \label{tab:class}
+\end{table}
+
+\end{column}
+
+
+\end{columns}
+
+\end{frame}
 
 \end{document}
