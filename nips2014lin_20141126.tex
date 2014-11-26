@@ -171,13 +171,8 @@ model, $\nonlin{\cdot}$:
 \textbf{Prior} on latent functions $\lstate$ at locations $\Inobs =
 \cbrac{\inobs_n}^N_{n=1}$,
 \begin{equation}
-    \prob{\lstate} = \gausC{\lstate}{\mathbf{0}, \KERNL\!\brac{\Inobs, \Inobs}} \text{,}
+    \prob{\lstate} = \gausC{\lstate}{\mathbf{0}, \KERNL\!\brac{\Inobs, \Inobs}}
 \end{equation}
-where $\KERNL\!\brac{\Inobs, \Inobs}$ evaluates the covariance function 
-$\kernl\!\brac{\inobs,  \inobs' ; \khypers}$ at all observed locations.
-
-\vspace{1cm}
-
 \textbf{Likelihood} encodes $\obs = \nonlin{\lstate} + \text{noise}$,
 \begin{equation}
     \probC{\obs}{\lstate}
@@ -186,8 +181,6 @@ $\kernl\!\brac{\inobs,  \inobs' ; \khypers}$ at all observed locations.
         \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar}
     \label{eq:like}
 \end{equation}%
-
-\vspace{1cm}
 %
 The \textbf{posterior} is the solution to our inverse problem:
 \begin{equation}
@@ -317,8 +310,6 @@ wrt the posterior parameters $\pomean$ and $\pocov$. \\
 
 \end{block}
 
-
-
 %----------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.1
@@ -328,7 +319,6 @@ wrt the posterior parameters $\pomean$ and $\pocov$. \\
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
-
 
 \begin{block}{Extended Gaussian Process (EGP)}
     
@@ -361,8 +351,6 @@ This results in the \emph{Gauss Newton} method.
 
 \end{block}
 
-
-
 %----------------------------------------------------------------------------------------
 
 \end{column} % End of column 2.2
@@ -384,10 +372,8 @@ This results in the \emph{Gauss Newton} method.
         likelihood in \eqref{eq:like} -- so similar complexity as Laplace
         approx.
 
-    \item %We can also derive the iterative extended and sigma-point Kalman
-        %filters using this framework.
-        The iterative extended and sigma-point Kalman filters are specific instances of 
-        our variational framework.
+    \item We can also derive the iterative extended and sigma-point Kalman
+        filters using this framework.
 \end{itemize}
 
 \end{alertblock} 
@@ -398,21 +384,19 @@ This results in the \emph{Gauss Newton} method.
 
 
 \begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
-%
-%
-%
+
+
+
 %\begin{column}{\onecolwid} % the first column within column 2 (column 2.1)
 \begin{column}{\twocolwid}
-%
-%
+
+
 \begin{block}{Experiments}
-%
+
 \begin{columns}
-\begin{column}{0.6\twocolwid}%\vspace{-1.8in}
+\begin{column}{0.38\twocolwid}
 
-%\vspace{-2cm}
-\textbf{Synthetic inversion problems}
-
+\textbf{Toy inversion problems}
 
 \begin{table}[tb]
     \centering
@@ -424,11 +408,11 @@ This results in the \emph{Gauss Newton} method.
   %      transformed observations, $\obs$, only given the forward
     %    transformation $\nonlin{\cdot}$. The UGP and EGP have similar
      %   perfomance, and outperform \cite{Opper2009}
- %
         Performance on synthetic inversion problems.
         }
+
     \vspace{5mm}
-    \small
+    \tiny
     \begin{tabular}{r|c| c c c c c c}
         \multirow{2}{*}{$\nonlin{\lstate}$} & \multirow{2}{*}{Algorithm} & 
             \multicolumn{2}{c}{NLPD $\lstates\test$} &
@@ -466,13 +450,9 @@ This results in the \emph{Gauss Newton} method.
     \label{tab:toy}
 \end{table}
 
-
-
-%\vfill
-
 \end{column}
+\begin{column}{0.29\twocolwid}%\vspace{-.8in}
 
-\begin{column}{0.36\twocolwid}
 \begin{figure}
     \includegraphics[width=0.6\onecolwid]{fig/signdemo.png}
 
@@ -487,12 +467,15 @@ This results in the \emph{Gauss Newton} method.
    %     $\lstate$, and the dashed red line is the predicted value of this
     %    latent process. The green line is the predicted values of the
     %    observations, $\obs\test$.
-   Learning the UGP with the forward model $\nonlin{\lstate} =
+   Learning the UGP with the forward model, $\nonlin{\lstate} =
      2\times\text{sign}\!\brac{\lstate} + \lstate^3$.    
        }
+
    \label{fig:sign}
 \end{figure}
 
+\end{column}
+\begin{column}{0.29\twocolwid}%\vspace{-1.8in}
 
 \textbf{Binary classification}
 
@@ -508,22 +491,24 @@ This results in the \emph{Gauss Newton} method.
      %   numbers `3' and `5'. We compare to other classifiers, including GP
     %    classifiers derived \emph{specifically} for this task -- our
      %   GPs only require input of a different $\nonlin{\cdot}$. 
-     Perf. on USPS  for classes `3' and `5'.
+     Performance on USPS handwritten-digits dataset for classes `3' and `5'
+     using  logistic sigmoid `forward function'.
     }
 
     \vspace{5mm}
-    \small
-    \begin{tabular}{r| c c}
-    Algorithm & NLP $\obss\test$ & Error rate (\%) \\
+    \scriptsize
+    \begin{tabular}{r| c c c c}
+    Algorithm & NLP $\obss\test$ & Error rate (\%) 
+        & $\log\!\brac{\sigma_\text{se}}$ & $\log\!\brac{l_\text{se}}$ \\
     \toprule
-    GP -- Laplace & 0.11528 & 2.9754  \\
-    GP -- EP & 0.07522 & 2.4580  \\
-    GP -- VB & 0.10891 & 3.3635  \\ 
-    SVM (RBF) & 0.08055 & 2.3286  \\
-    Logistic Reg. & 0.11995 & 3.6223  \\
+    GP -- Laplace & 0.11528 & 2.9754 & 2.5855 & 2.5823 \\
+    GP -- EP & 0.07522 & 2.4580 & 5.2209 & 2.5315 \\
+    GP -- VB & 0.10891 & 3.3635 & 0.9045 & 2.0664 \\ 
+    SVM (RBF) & 0.08055 & 2.3286 & -- & -- \\
+    Logistic Reg. & 0.11995 & 3.6223 & -- & -- \\
     \midrule
-    UGP & \textbf{0.07290} & \textbf{1.9405}  \\
-    EGP & 0.08051 & 2.1992  \\
+    UGP & \textbf{0.07290} & \textbf{1.9405} & 1.5743 & 1.5262 \\
+    EGP & 0.08051 & 2.1992 & 2.9134 & 1.7872 \\
     %UGP & 0.06524 & 2.1992 & 1.5140 & 1.4257 \\
     %EGP & 0.12946 & 2.0699 & 3.3068 & 1.7480 \\
     \bottomrule
@@ -531,14 +516,9 @@ This results in the \emph{Gauss Newton} method.
     \label{tab:class}
 \end{table}
 
-
+\vfill
 
 \end{column}
-%
-
-
-
-
 \end{columns}
 \end{block}
 
@@ -554,6 +534,7 @@ This results in the \emph{Gauss Newton} method.
 
 \begin{column}{\onecolwid} % The third column
 
+%----------------------------------------------------------------------------------------
 \begin{block}{Unscented Gaussian Process (UGP)}
 %
 \begin{figure}
@@ -563,7 +544,7 @@ This results in the \emph{Gauss Newton} method.
  \caption{UGP linearises  $\nonlin{\cdot}$ using the unscented transform.}
 \end{figure}        
 
-Make sigma points \cite{Julier2004} $\Sfunc_{ni}$ and $\Sobs_{ni}$,
+Make sigma points \cite{Julier2004, Geist2010} $\Sfunc_{ni}$ and $\Sobs_{ni}$,
 then solving $N$ scalar linear regression problems,
 \begin{equation*}
     \argmin_{\Lins_{nk}, \intcpts_{nk}} \sum^{3}_{i=0} 
@@ -582,31 +563,20 @@ and~$\Sobs_{ni}$ $\forall i$.
 \end{block}
 
 
-%----------------------------------------------------------------------------------------
 
 
+\begin{block}{Kernel Hyperparameters}
 
-
-\begin{block}{Learning the EGP and the UGP}
-
-%Learning the hyperparameters, $\khypers$ in $\kernl\!\brac{\inobs,
-%    \inobs'|\khypers}$, is usually an optimisation $\khypers^* =
-%\argmax_{\khypers}\Fengy$,%
-%\begin{itemize}
-%    \item but $\pomean$ is an implicit function of $\khypers$,
-%    \item so $\nabla_{\khypers}\Fengy$ also requires various derivatives of
-%        $\nonlin{\cdot}$.
-%\end{itemize}
-%\emph{Solution}: numerical gradient methods (BOBYQA).
-
-Variational-EM updates:
+Learning the hyperparameters, $\khypers$ in $\kernl\!\brac{\inobs,
+    \inobs'|\khypers}$, is usually an optimisation $\khypers^* =
+\argmax_{\khypers}\Fengy$,%
 \begin{itemize}
-	\item
-		Optimize posterior parameters $\pomean, \pocov$
-	\item
-		Optimize hyperparameters and forward model's parameters 
-		for fixed posterior parameters
+    \item but $\pomean$ is an implicit function of $\khypers$,
+    \item so $\nabla_{\khypers}\Fengy$ also requires various derivatives of
+        $\nonlin{\cdot}$.
 \end{itemize}
+\emph{Solution}: numerical gradient methods (BOBYQA).
+
 \end{block}
 
 
