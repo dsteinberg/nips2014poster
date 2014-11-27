@@ -391,8 +391,9 @@ This results in the \emph{Gauss Newton} method.
 
 \begin{itemize}
 
-    \item The unscented Gaussian process does not require any gradients
-        $\partial\nonlin{\lstate}\!/\partial\lstate$ to learn the posterior.
+    \item UGP %does not require any gradients
+       % $\partial\nonlin{\lstate}\!/\partial\lstate$ to learn the posterior.
+       treats the likelihood as a `black box' by not requiring knowledge of its form or its derivatives.
 
     \item $\Linmat$ is a \emph{diagonal} matrix because of the factorising
         likelihood in \eqref{eq:like} -- so similar complexity as Laplace
