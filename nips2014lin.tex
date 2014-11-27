@@ -153,7 +153,8 @@ model, $\nonlin{\cdot}$:
 
 \begin{enumerate}
     \item Compute a posterior distribution over $\lstate$.
-    \item Avoid  re-deriving inference methods for every new $\nonlin{\cdot}$.
+    \item Avoid  `hand-coding' methods for every new $\nonlin{\cdot}$, 
+    i.e.~generic inference for non-linear likelihoods.
     \item The gradients, $\partial{\nonlin{\lstate}} /
         \partial\lstate$, may not be known.
     \item Avoid expensive simulations (cf.~MCMC).
@@ -171,19 +172,26 @@ model, $\nonlin{\cdot}$:
 \textbf{Prior} on latent functions $\lstate$ at locations $\Inobs =
 \cbrac{\inobs_n}^N_{n=1}$,
 \begin{equation}
-    \prob{\lstate} = \gausC{\lstate}{\mathbf{0}, \KERNL\!\brac{\Inobs, \Inobs}} \text{,}
+    \prob{\lstate} = \gausC{\lstate}{\prmean, \KERNL} \text{,}
 \end{equation}
-where $\KERNL\!\brac{\Inobs, \Inobs}$ evaluates the covariance function 
+where $\prmean, \KERNL$ evaluate the mean function $\mu(\inobs)$ and 
+ the covariance function 
 $\kernl\!\brac{\inobs,  \inobs' ; \khypers}$ at all observed locations.
 
 \vspace{1cm}
 
 \textbf{Likelihood} encodes $\obs = \nonlin{\lstate} + \text{noise}$,
 \begin{equation}
+%    \probC{\obs}{\lstate}
+ %   = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}
+%    = \prod_{n=1}^N 
+%        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar}
     \probC{\obs}{\lstate}
-    = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}
+   = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
+ % =  \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}    
     = \prod_{n=1}^N 
-        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar}
+        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar} 
+ \text{.}
     \label{eq:like}
 \end{equation}%
 
@@ -191,8 +199,6 @@ $\kernl\!\brac{\inobs,  \inobs' ; \khypers}$ at all observed locations.
 %
 The \textbf{posterior} is the solution to our inverse problem:
 \begin{equation}
-%    \probC{\lstate}{\obs} = \frac{\probC{\obs}{\lstate}\prob{\lstate}}
- %       {\prob{\obs}}
      \probC{\lstate}{\obs} \propto {\probC{\obs}{\lstate}\prob{\lstate}}   \text{,}
     \label{eq:post}
 \end{equation}
@@ -255,14 +261,14 @@ which is generally \emph{intractable} due to  the \emph{non-linear} nature of  $
 %------------------------------------------------------------------------------
 
 \begin{block}{Variational Inference}
-We approximate the posterior:
-\begin{equation}
-    \probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate} {\pomean,\pocov},
-\end{equation}
+We approximate 
+%\begin{equation}
+$\probC{\lstate}{\obs} \approx \qrob{\lstate} = \gausC{\lstate} {\pomean,\pocov}$,
+%\end{equation}
 via the maximisation of the evidence \emph{lower bound}: 
 \begin{equation}
     \Fengy = \expec{q\lstate}{\log \probC{\obs}{\lstate}}
-        - \KL{\qrob{\lstate}}{\prob{\lstate}} \text{,}
+        - \KL{\qrob{\lstate}}{\prob{\lstate}} \text{.}
     \label{eq:fengy}
 \end{equation}
 %Then we use $\Fengy$ to \emph{optimise} posterior parameters:
@@ -271,11 +277,11 @@ via the maximisation of the evidence \emph{lower bound}:
   %  \pocov^* = \argmax_\pocov{\Fengy},
 %\end{equation}
 % where $\qrob{\lstate}$ should approach the true posterior $\probC{\lstate}{\obs}$. 
-wrt the posterior parameters $\pomean$ and $\pocov$. \\
+% wrt the posterior parameters $\pomean$ and $\pocov$. \\
 %
 \vspace{0.5cm}
 %
-\structure{\textbf{Main difficulty:}} The expected log likelihood cannot be computed analytically,
+\structure{\textbf{Main difficulty:}} `Intractable' expected log likelihood:
 \begin{equation*}
     \expec{q\lstate}{\log \probC{\obs}{\lstate}} = 
     -\frac{1}{2\lvar} \expec{q\lstate}{
@@ -293,14 +299,21 @@ wrt the posterior parameters $\pomean$ and $\pocov$. \\
   and obtain linearized objective $\tilde\Fengy$.
     \item \textbf{Newton method} on  $\tilde\Fengy$ to
         find~$\pomean$,
-        \begin{equation}
-            \pomean_{k+1} = \pomean_k -
-            \step\brac{\nabla_\pomean\nabla_\pomean\tilde\Fengy}\inv 
-                \nabla_\pomean\tilde\Fengy \text{.}
-            \label{eq:newton}
-        \end{equation}
-       \item
-       Find $\pocov$ by maximising $\tilde\Fengy$.
+%        \begin{equation}
+%            \pomean_{k+1} = \pomean_k -
+%            \step\brac{\nabla_\pomean\nabla_\pomean\tilde\Fengy}\inv 
+%                \nabla_\pomean\tilde\Fengy \text{.}
+%            \label{eq:newton}
+%        \end{equation}
+%       \item
+       and `closed-form' updates for  $\pocov$:
+\begin{align*}
+ \pomean_{k+1} &= \brac{1-\step}\pomean_k + \step\prmean 
+        + \step\Kgain_k\brac{\obs - \intcpt_k - \Linmat_k\prmean} \text{,} \\
+    \pocov_{k+1}   &= \brac{\ident{N} - \Kgain_k\Linmat_k}\!\prcov,   
+  \end{align*}        
+where     $ \Kgain_k = \prcov\Linmat_k\transpose\brac{\lcov +
+        \Linmat_k\prcov\Linmat_k\transpose}\inv$ .  
 \end{enumerate}
 %
 %Posterion parameters:
