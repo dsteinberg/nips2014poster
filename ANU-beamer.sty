@@ -1,0 +1,70 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Beamer layout dervided from <http://cameron.bracken.bz/beamer-template>
+% Based on ANU PowerPoint style <http://www.anu.edu.au/mo/content/powerpoint>
+% Created by Mark Reid <mark.reid@anu.edu.au>
+% Last Modified by ebonilla: 2011-06-10
+\typeout{Beamer Style `ANU' -- March 2011.}
+
+\usetheme{Madrid}
+%\useoutertheme{infolines}
+%\usecolortheme{seahorse}
+%\usecolortheme{rose}
+
+\setbeamertemplate{theorems}[normal font]
+\setbeamertemplate{blocks}[rounded,shadow=true]
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize subitem}[default]
+
+% \setbeamerfont{title}{shape=\scshape}
+% \setbeamerfont{title like}{shape=\scshape,series=\bfseries}
+% \setbeamerfont{frametitle}{shape=\scshape}
+% \setbeamerfont{block title}{shape=\scshape}
+
+\definecolor{anugrey}{rgb}{0.2,0.2,0.2}
+\definecolor{anublue}{rgb}{0.58,0.69,0.745}
+
+% \definecolor{anusilver}{rgb}{0.57,0.6,0.6}
+% \definecolor{anugold}{rgb}{0.506,0.455,0.043}
+% \definecolor{anured}{cmyk}{0,0.5,0.5,0.3}
+% \definecolor{anugreen}{cmyk}{0.3,0,0.3,0.3}
+ 
+ % Added by ebonilla
+ \definecolor{deepskyblue4}{rgb}{0, 0.408, 0.545}
+  \setbeamercolor{palette primary}{fg=white,bg=deepskyblue4}
+\setbeamercolor{palette secondary}{fg=white,bg=deepskyblue4!95!white}
+\setbeamercolor{palette tertiary}{fg=white,bg=deepskyblue4!90!white}
+\setbeamercolor{palette quaternary}{fg=white,bg=deepskyblue4!80!white}
+\setbeamercolor*{titlelike}{parent=palette primary}
+\setbeamercolor*{structure}{fg=deepskyblue4}
+\setbeamercolor*{separation line}{}
+\setbeamercolor*{fine separation line}{}
+
+
+
+% \setbeamercolor*{lower separation line head}{bg=anugrey}
+% \setbeamercolor*{title}{fg=white,bg=anugrey}
+\setbeamercolor*{normal text}{fg=black,bg=white}
+\setbeamercolor*{example text}{fg=black}
+% \setbeamercolor*{alerted text}{fg=anugold!80!black}
+% \setbeamercolor*{structure}{fg=anublue!80!black}
+
+% \setbeamercolor*{block title}{fg=black,bg=anublue!20!white}
+
+% \setbeamercolor*{palette primary}{fg=black,bg=anugold!20!white}  
+% \setbeamercolor*{palette tertiary}{fg=black,bg=anugold!20!white} 
+% \setbeamercolor*{palette quaternary}{fg=black,bg=black!10} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Extra Beamer commands
+\renewcommand{\(}{\begin{columns}}
+\renewcommand{\)}{\end{columns}}
+\newcommand{\<}[1]{\begin{column}{#1}}
+\renewcommand{\>}{\end{column}}
+
+% \newcommand{\quiet}[1]{{\small \color{anusilver} #1}}
+
+\newcommand{\intertitle}[1]{
+	\begin{beamercolorbox}[rounded=true,center]{structure}
+		\Large{#1}
+	\end{beamercolorbox}
+}
