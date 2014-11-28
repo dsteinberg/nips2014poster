@@ -68,7 +68,7 @@
 %% set some beamer theme options
 %\setbeamertemplate{title page}[default][colsep=-4bp,rounded=true]
 %\setbeamertemplate{sections/subsections in toc}[square]
-%\setbeamertemplate{items}[circle]
+\setbeamertemplate{items}[circle]
 %\setbeamertemplate{blocks}[width=0.0]
 %\beamertemplatenavigationsymbolsempty
 
@@ -142,8 +142,8 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
         model, $\nonlininv{\cdot}$.
     \item $\obs$ may be a continuous process or path (robot arm motion), 
         so $\lstate$ is a \textbf{Gaussian Process}.
-    \item \textbf{Bayes rule} is used to solve the inverse problem,
-        $\probC{\lstate}{\obs}$.
+    \item The posterior, $\probC{\lstate}{\obs}$, is the solution to our
+        inverse problem.
 \end{itemize}
 
 \end{column}
