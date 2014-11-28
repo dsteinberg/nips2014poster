@@ -26,8 +26,53 @@
 \documentclass{beamer}
 %\usetheme{NICTA}
 %\usetheme[pagenum=false]{NICTA}
-\usetheme[sidebar=false, pagenum=false]{NICTA}
-%\usetheme{Pittsburgh}
+%\usetheme[sidebar=false, pagenum=false]{NICTA}
+\usetheme{Boadilla}
+
+% set the basic colors
+\definecolor{npurple} {RGB}{45,0,139}  % NICTA purple
+\definecolor{ngreen} {RGB}{65,170,0}  % NICTA green
+\definecolor{Gray}              {RGB}{139, 141, 142} 	% Gray  Approximate PANTONE COOL-GRAY-8
+\setbeamercolor{palette primary}   {fg=white,bg=ngreen!50}
+\setbeamercolor{palette secondary} {fg=white,bg=ngreen!60}
+\setbeamercolor{palette tertiary}  {fg=white,bg=ngreen!70}
+\setbeamercolor{palette quaternary}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=ngreen!83}
+\setbeamercolor{titlelike}         {bg=Gray!10}
+\setbeamercolor{frametitle}        {bg=Gray!10}
+\setbeamercolor{cboxb}{fg=black,bg=ngreen!83}
+\setbeamercolor{cboxr}{fg=black,bg=red}
+
+% set colors for itemize/enumerate
+\setbeamercolor{item}{fg=ngreen!83}
+\setbeamercolor{item projected}{fg=white,bg=ngreen!83}
+
+% set colors for blocks
+\setbeamercolor{block title}{fg=ngreen!83,bg=white}
+\setbeamercolor{block body}{fg=black,bg=npurple!40}
+
+% set colors for alerted blocks (blocks with frame)
+\setbeamercolor{block alerted title}{fg=white,bg=ngreen!83}
+\setbeamercolor{block alerted body}{fg=black,bg=ngreen!10}
+
+% set the fonts
+\setbeamerfont{section in head/foot}{series=\bfseries}
+\setbeamerfont{block title}{series=\bfseries\sffamily}
+\setbeamerfont{block alerted title}{series=\bfseries}
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamerfont{frametitle}{size=\Large}
+%\setbeamerfont{block body}{series=\rmfamily}
+%\setbeamerfont{caption}{series=\rmfamily\footnotesize}
+
+% set some beamer theme options
+\setbeamertemplate{title page}[default][colsep=-4bp,rounded=true]
+\setbeamertemplate{sections/subsections in toc}[square]
+\setbeamertemplate{items}[circle]
+\setbeamertemplate{blocks}[width=0.0]
+\beamertemplatenavigationsymbolsempty
+
+%\setbeamercolor*{palette secondary}{use=structure,fg=white,bg=red}
+%\setbeamercolor*{palette tertiary}{use=structure,fg=white,bg=green}
 %\usecolortheme{seahorse}
 
 \usepackage[australian]{babel}
@@ -56,13 +101,16 @@
 
 %%%%% TITLE SLIDE %%%%%
 
-\title{Extended and Unscented Gaussian Processes}
-\author{\textit{Daniel M.\ Steinberg} and
+\title[Extended and Unscented GPs]{Extended and Unscented Gaussian Processes}
+\author[D. Steinberg \& E. Bonilla]{\textit{Daniel M.\ Steinberg} and
         Edwin V.\ Bonilla}
 
-\institute{NICTA and The University of New South Wales} % Institution(s)
+\institute[NICTA \& UNSW]{NICTA and The University of New South Wales} % Institution(s)
 \date{}
 
+\titlegraphic{\includegraphics[width=2cm]{fig/logo-nicta}\hspace*{2cm}~%
+   \includegraphics[width=2cm]{fig/logo-unsw}
+}
 
 \begin{frame}
     \titlepage
@@ -79,21 +127,21 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
 \begin{equation*}
     \obs = \nonlin{\lstate} + \boldsymbol\epsilon
 \end{equation*}
-\vspace{-8mm}
+\vspace{-6mm}
 \begin{columns}
 
 \begin{column}{0.5\linewidth}
 \footnotesize
-\vspace{-5mm}
+%\vspace{-3mm}
 
 \begin{itemize}
     \item We can measure the outputs of the system, $\obs$, but the inputs,
         $\lstate$, are \textbf{latent}.
-    \item We wish to infer these inputs \emph{without} access to the inverse
+    \item We wish to infer these inputs \textbf{without} access to the inverse
         model, $\nonlininv{\cdot}$.
     \item $\obs$ may be a continuous process or path (robot arm motion), 
         so $\lstate$ is a \textbf{Gaussian Process}.
-    \item \emph{Bayes rule} is used to solve the inverse problem,
+    \item \textbf{Bayes rule} is used to solve the inverse problem,
         $\probC{\lstate}{\obs}$.
 \end{itemize}
 
@@ -116,10 +164,10 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
 \end{column}
 \end{columns}
 
-\vspace{2mm}
+\vspace{4mm}
 
-\emph{Problem}: Nonlinearities in the likelihood $\rightarrow$ 
-\emph{intractable} posterior $\probC{\lstate}{\obs}$.
+\textbf{Problem}: Nonlinearities in the likelihood $\rightarrow$ 
+\emph{intractable} posterior~$\probC{\lstate}{\obs}$.
 \vspace{3mm}
 
 
@@ -132,7 +180,7 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
     \frametitle{Overview and Key Results}
 
 
-\vspace{-8mm}
+\vspace{-4mm}
 \begin{columns}
 
 \begin{column}{0.45\linewidth}
@@ -140,9 +188,9 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
 Extended and unscented GPs,
 \begin{itemize}
     \footnotesize
-    \item Use \emph{variational inference} to learn an approx.\ posterior 
+    \item Use \textbf{variational inference} to learn an approx.\ posterior 
         $\qrob{\lstate}$,
-    \item with \emph{Newton method} with linearization
+    \item with \textbf{Newton method} with linearization
         $\nonlin{\lstate} \approx \Linmat\lstate + \intcpt$;
     \begin{itemize}
         \footnotesize
@@ -151,7 +199,7 @@ Extended and unscented GPs,
     \end{itemize}
 \end{itemize}
 
-\vspace{3mm}
+\vspace{5mm}
 Some properties,
 \begin{enumerate}
     \footnotesize
@@ -161,7 +209,7 @@ Some properties,
 
 \begin{block}{}
     \centering
-    Poster -- \emph{Wed33}
+    Poster -- \textbf{Wed33}
 \end{block}
 
 \end{column}
