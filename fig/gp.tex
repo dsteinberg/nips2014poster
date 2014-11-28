@@ -14,6 +14,8 @@
                         minimum size=\nodesize},
 		point/.style ={circle,draw=black!60,fill=black!60,thick,inner sep=0pt,
                        minimum size=\pointsize},
+		fact/.style ={rectangle,draw=black,fill=black,thick,inner sep=0pt,
+                       minimum size=\pointsize},
 		oarc/.style  ={->,>=latex',line width=\arcwidth},
 		plate/.style ={draw=black!60,rounded corners,thick,inner sep=\platepad},
 		reps/.style  ={anchor=south east,inner sep=3pt},
@@ -33,10 +35,15 @@
     \node[point]     (i3)    [above=of q3, label=$\inobs_3$]    {};
     \node            (d1)    [above=of d2, yshift=4mm]          {$\ldots$};
 
-    \node[odist]    (x0)    [below=of q0]        {$\obss_{0}$};
-    \node[odist]    (x1)    [below=of q1]        {$\obss_{1}$};
-    \node[odist]    (x2)    [below=of q2]        {$\obss_{2}$};
-    \node[odist]    (x3)    [below=of q3]        {$\obss_{3}$};
+    \node[fact]     (g0)    [below=of q0, label=right:$g_0$]          {};
+    \node[fact]     (g1)    [below=of q1, label=right:$g_1$]          {};
+    \node[fact]     (g2)    [below=of q2, label=right:$g_2$]          {};
+    \node[fact]     (g3)    [below=of q3, label=right:$g_3$]          {};
+
+    \node[odist]    (x0)    [below=of g0]        {$\obss_{0}$};
+    \node[odist]    (x1)    [below=of g1]        {$\obss_{1}$};
+    \node[odist]    (x2)    [below=of g2]        {$\obss_{2}$};
+    \node[odist]    (x3)    [below=of g3]        {$\obss_{3}$};
     \node           (d3)    [below=of d2]        {$\ldots$};
     
     \node[point]    (lcov)  [right=of x3,xshift=5mm,label=right:$\lvar$] {};

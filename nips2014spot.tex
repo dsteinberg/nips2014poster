@@ -26,8 +26,9 @@
 \documentclass{beamer}
 %\usetheme{NICTA}
 %\usetheme[pagenum=false]{NICTA}
-
-\usetheme[sidebar=false]{NICTA}
+\usetheme[sidebar=false, pagenum=false]{NICTA}
+%\usetheme{Pittsburgh}
+%\usecolortheme{seahorse}
 
 \usepackage[australian]{babel}
 \usepackage{times}
@@ -92,6 +93,8 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
         model, $\nonlininv{\cdot}$.
     \item $\obs$ may be a continuous process or path (robot arm motion), 
         so $\lstate$ is a \textbf{Gaussian Process}.
+    \item \emph{Bayes rule} is used to solve the inverse problem,
+        $\probC{\lstate}{\obs}$.
 \end{itemize}
 
 \end{column}
@@ -99,14 +102,21 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
 \begin{column}{0.5\linewidth}
 
 \begin{figure}
-    \includegraphics[width=0.85\linewidth]{fig/polydemo}
-    \caption{Example of inferring a latent function, $\lstate$, from
-        transformed and noisy realisations, $\obs$. Here $\nonlin{\lstate} =
-        \lstate^3 + \lstate^2 + \lstate$.}
+    \includegraphics[width=0.75\linewidth]{fig/signdemo}
+
+    \caption{Inferring a latent function, $\lstate$, from transformed and noisy
+        realisations, $\obs$. Here $\nonlin{\lstate} =
+        2\times\text{sign}\!\brac{\lstate} + \lstate^3$.}
+
+    %\caption{The UGP with $\nonlin{\lstate} =
+        %2\times\text{sign}\!\brac{\lstate} + \lstate^3$.}
+
 \end{figure}
 
 \end{column}
 \end{columns}
+
+\vspace{2mm}
 
 \emph{Problem}: Nonlinearities in the likelihood $\rightarrow$ 
 \emph{intractable} posterior $\probC{\lstate}{\obs}$.
@@ -122,7 +132,7 @@ model, $\nonlin{\cdot}$, which is often nonlinear:
     \frametitle{Overview and Key Results}
 
 
-\vspace{-7mm}
+\vspace{-8mm}
 \begin{columns}
 
 \begin{column}{0.45\linewidth}
@@ -141,7 +151,7 @@ Extended and unscented GPs,
     \end{itemize}
 \end{itemize}
 
-\vspace{2mm}
+\vspace{3mm}
 Some properties,
 \begin{enumerate}
     \footnotesize
@@ -149,39 +159,41 @@ Some properties,
     \item UGP does not require $\partial\nonlin{\lstate}\!/\partial{\lstate}$!
 \end{enumerate}
 
+\begin{block}{}
+    \centering
+    Poster -- \emph{Wed33}
+\end{block}
+
 \end{column}
 
 \begin{column}{0.55\linewidth}
 
 \begin{figure}
-    \includegraphics[width=0.75\linewidth]{fig/signdemo}
+    \includegraphics[width=0.65\linewidth]{fig/statlin_gp}
 
-    \caption{The UGP with $\nonlin{\lstate} =
-        2\times\text{sign}\!\brac{\lstate} + \lstate^3$.}
+    \caption{UGP linearises $\nonlin{\cdot}$ using the unscented transform
+        (regression).}
 
 \end{figure}
 
-\vspace{-1cm}
+\vspace{-1.1cm}
 
 \begin{table}[tb]
     \centering
     \caption[]{Binary class.\ on USPS handwritten digits.}
     \tiny
     \vspace{-3mm}
-    \begin{tabular}{r| c c c c}
-    Algorithm & NLP $\obss\test$ & Error rate (\%) 
-        & $\log\!\brac{\sigma_\text{se}}$ & $\log\!\brac{l_\text{se}}$ \\
+    \begin{tabular}{r| c c}
+    Algorithm & NLP $\obss\test$ & Error rate (\%) \\
     \toprule
-    GP -- Laplace & 0.11528 & 2.9754 & 2.5855 & 2.5823 \\
-    GP -- EP & 0.07522 & 2.4580 & 5.2209 & 2.5315 \\
-    GP -- VB & 0.10891 & 3.3635 & 0.9045 & 2.0664 \\ 
-    SVM (RBF) & 0.08055 & 2.3286 & -- & -- \\
-    Logistic Reg. & 0.11995 & 3.6223 & -- & -- \\
+    GP -- Laplace & 0.115& 2.975 \\
+    GP -- EP & 0.075& 2.458 \\
+    GP -- VB & 0.109 & 3.364 \\ 
+    SVM (RBF) & 0.081 & 2.329 \\
+    Logistic Reg. & 0.12 & 3.622 \\
     \midrule
-    UGP & \emph{0.07290} & \emph{1.9405} & 1.5743 & 1.5262 \\
-    EGP & 0.08051 & 2.1992 & 2.9134 & 1.7872 \\
-    %UGP & 0.06524 & 2.1992 & 1.5140 & 1.4257 \\
-    %EGP & 0.12946 & 2.0699 & 3.3068 & 1.7480 \\
+    UGP & \emph{0.073} & \emph{1.941} \\
+    EGP & 0.081 & 2.199 \\
     \bottomrule
     \end{tabular}
     \label{tab:class}

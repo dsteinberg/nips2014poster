@@ -79,7 +79,7 @@
 % Red underline
 \newsavebox\MBox
 \newcommand\Cline[2][red]{{\sbox\MBox{$#2$}%
-  \rlap{\usebox\MBox}\color{#1}\rule[-1.6\dp\MBox]{\wd\MBox}{0.7pt}}}
+  \rlap{\usebox\MBox}\color{#1}\rule[-1.6\dp\MBox]{\wd\MBox}{1.5pt}}}
 
 
 %------------------------------------------------------------------------------
@@ -245,8 +245,6 @@ which is generally \emph{intractable} due to  the \emph{non-linear} nature of  $
 
 
 
-
-
 \begin{column}{\sepwid}\end{column} % Empty spacer column
 
 \begin{column}{\twocolwid} % Begin a column which is two columns wide (column 2)
@@ -270,7 +268,7 @@ via the maximisation of the evidence \emph{lower bound}:
     \Fengy = \expec{q\lstate}{\log \probC{\obs}{\lstate}}
         - \KL{\qrob{\lstate}}{\prob{\lstate}} \text{.}
     \label{eq:fengy}
-\end{equation}
+\end{equation}%
 %Then we use $\Fengy$ to \emph{optimise} posterior parameters:
 %\begin{equation}
  %   \pomean^* = \argmax_\pomean{\Fengy}, \qquad
@@ -278,9 +276,7 @@ via the maximisation of the evidence \emph{lower bound}:
 %\end{equation}
 % where $\qrob{\lstate}$ should approach the true posterior $\probC{\lstate}{\obs}$. 
 % wrt the posterior parameters $\pomean$ and $\pocov$. \\
-%
-\vspace{0.5cm}
-%
+\vspace{0.5cm}%
 \structure{\textbf{Main difficulty:}} `Intractable' expected log likelihood:
 \begin{equation*}
     \expec{q\lstate}{\log \probC{\obs}{\lstate}} = 
@@ -294,9 +290,9 @@ via the maximisation of the evidence \emph{lower bound}:
     \item \textbf{Linearize} the forward model: %$\nonlin{\lstate}$,
         \begin{equation}      
        \nonlin{\lstate} \approx  \nonlintilde{\lstate} = \Linmat\lstate + \intcpt  \text{,}
-           \label{eq:linearize}
+           \label{eq:linearise}
        \end{equation}
-  and obtain linearized objective $\tilde\Fengy$.
+  and obtain linearised objective $\tilde\Fengy$.
     \item \textbf{Newton method} on  $\tilde\Fengy$ to
         find~$\pomean$,
 %        \begin{equation}
@@ -310,12 +306,12 @@ via the maximisation of the evidence \emph{lower bound}:
 \begin{align*}
  \pomean_{k+1} &= \brac{1-\step}\pomean_k + \step\prmean 
         + \step\Kgain_k\brac{\obs - \intcpt_k - \Linmat_k\prmean} \text{,} \\
-    \pocov_{k+1}   &= \brac{\ident{N} - \Kgain_k\Linmat_k}\!\prcov,   
+    \pocov  &= \brac{\ident{N} - \Kgain_k\Linmat_k}\!\prcov,   
   \end{align*}        
 where     $ \Kgain_k = \prcov\Linmat_k\transpose\brac{\lcov +
         \Linmat_k\prcov\Linmat_k\transpose}\inv$ .  
  \item
-\textbf{Methods:} \emph{How to linearize $\rightarrow$ EGP vs.~UGP.}
+\textbf{Methods:} \emph{How to linearise $\rightarrow$ EGP vs.~UGP.}
 \end{enumerate}
 %
 %Posterion parameters:
@@ -349,7 +345,7 @@ where     $ \Kgain_k = \prcov\Linmat_k\transpose\brac{\lcov +
 \begin{figure}
     \includegraphics[height=14cm]{fig/taylor_gp}
     \hspace{3cm}
-%    \caption{Demonstration of linearizing the forward model, $\nonlin{\cdot}$,
+%    \caption{Demonstration of linearising the forward model, $\nonlin{\cdot}$,
 %        using a first order Taylor series expansion.}
 \caption{EGP linearises  $\nonlin{\cdot}$ using a 1st-order Taylor  expansion.}
 \end{figure}        
@@ -426,7 +422,7 @@ This results in the \emph{Gauss Newton} method.
 \begin{column}{0.6\twocolwid}%\vspace{-1.8in}
 
 %\vspace{-2cm}
-\textbf{Synthetic inversion problems}
+\structure{\textbf{Synthetic inversion problems}}
 
 
 \begin{table}[tb]
@@ -488,6 +484,7 @@ This results in the \emph{Gauss Newton} method.
 \end{column}
 
 \begin{column}{0.36\twocolwid}
+\vspace{-3mm}
 \begin{figure}
     \includegraphics[width=0.6\onecolwid]{fig/signdemo.png}
 
@@ -508,9 +505,10 @@ This results in the \emph{Gauss Newton} method.
    \label{fig:sign}
 \end{figure}
 
+\vspace{-4mm}
+\structure{\textbf{Binary classification}}
 
-\textbf{Binary classification}
-
+\vspace{-2mm}
 \begin{table}[tb]
     \centering
 
@@ -573,15 +571,15 @@ This results in the \emph{Gauss Newton} method.
 %
 \begin{figure}
     \includegraphics[height=14cm]{fig/statlin_gp}
-%    \caption{Demonstration of linearizing the forward model, $\nonlin{\cdot}$,
+%    \caption{Demonstration of linearising the forward model, $\nonlin{\cdot}$,
  %       using the unscented transform.}
- \caption{UGP linearises  $\nonlin{\cdot}$ using the unscented transform.}
+ \caption{UGP linearises $\nonlin{\cdot}$ using the unscented transform.}
 \end{figure}        
 
 Make sigma points \cite{Julier2004} $\Sfunc_{ni}$ and $\Sobs_{ni}$,
 then solving $N$ scalar linear regression problems,
 \begin{equation*}
-    \argmin_{\Lins_{nk}, \intcpts_{nk}} \sum^{3}_{i=0} 
+    \argmin_{\Lins_{nk}, \intcpts_{nk}} \sum^{2}_{i=0} 
         \lnorm{2}{\Sobs_{ni} - \brac{\Lins_{nk}\Sfunc_{ni} + \intcpts_{nk}}}^2
 \end{equation*}
 gives,
@@ -590,9 +588,10 @@ gives,
     \intcpt_k &= \sbrac{\bar\obss_{0} - \Lins_{0k}\pomeans_{0k}, \ldots,
         \bar\obss_{N} - \Lins_{Nk}\pomeans_{Nk}}\transpose. \nonumber
 \end{align}
-Here $\Lins_{nk} = \xcovs_{\obss\pomeans,nk} \pocovs_{nnk}\inv$ and 
+Here $\Lins_{nk} = \xcovs_{\obss\pomeans,nk} \pocovs_{nnk}\inv$, 
 $\xcovs_{\obss\pomeans,nk}$ is the cross-covariance between $\Sfunc_{ni}$ 
-and~$\Sobs_{ni}$ $\forall i$.
+and~$\Sobs_{ni}$ $\forall i$, and $\bar\obss_n = \sum_{i=0}^2 \Sw_i
+\Sobs_{ni}$.
 
 \end{block}
 
