@@ -190,17 +190,17 @@ $\kernl\!\brac{\inobs,  \inobs' ; \khypers}$ at all observed locations.
    = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
  % =  \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}    
     = \prod_{n=1}^N 
-        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar},
+        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar} \text{.}
     \label{eq:like}
 \end{equation}%
-this factorisation simplifies computation but is not required. The
+This factorisation simplifies computation but is not required. \\The
 \textbf{posterior} is the solution to our inverse problem:
-\vspace{-4mm}
+% \vspace{-4mm}
 \begin{equation}
      \probC{\lstate}{\obs} \propto {\probC{\obs}{\lstate}\prob{\lstate}}   \text{,}
     \label{eq:post}
 \end{equation}
-which is generally \emph{intractable} due to  the \emph{non-linear} nature of
+which is generally \emph{intractable} due to   \emph{non-linear}   
 $\nonlin{\lstate}$.
 
 %\begin{equation}
