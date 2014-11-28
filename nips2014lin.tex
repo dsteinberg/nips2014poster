@@ -190,25 +190,24 @@ $\kernl\!\brac{\inobs,  \inobs' ; \khypers}$ at all observed locations.
    = \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lcov}
  % =  \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}    
     = \prod_{n=1}^N 
-        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar} 
- \text{.}
+        \gausC{\obss_n}{\Cline{\nonlin{\lstates_n}}, \lvar},
     \label{eq:like}
 \end{equation}%
-
-\vspace{1cm}
-%
-The \textbf{posterior} is the solution to our inverse problem:
+this factorisation simplifies computation but is not required. The
+\textbf{posterior} is the solution to our inverse problem:
+\vspace{-4mm}
 \begin{equation}
      \probC{\lstate}{\obs} \propto {\probC{\obs}{\lstate}\prob{\lstate}}   \text{,}
     \label{eq:post}
 \end{equation}
-which is generally \emph{intractable} due to  the \emph{non-linear} nature of  $\nonlin{\lstate}$.
+which is generally \emph{intractable} due to  the \emph{non-linear} nature of
+$\nonlin{\lstate}$.
+
 %\begin{equation}
  %   \prob{\obs} = \int \gausC{\obs}{\Cline{\nonlin{\lstate}}, \lvar\ident{N}}
  %       \gausC{\lstate}{\mathbf{0}, \KERNL} d\lstate
 %\end{equation}
 
-\end{block}
 
 
 %------------------------------------------------------------------------------
@@ -237,6 +236,7 @@ which is generally \emph{intractable} due to  the \emph{non-linear} nature of  $
         forward model $\nonlin{\lstates_n}$.}
 \end{figure}
 
+\end{block}
 
 %----------------------------------------------------------------------------------------
 
@@ -287,7 +287,7 @@ via the maximisation of the evidence \emph{lower bound}:
 %We use two tricks to get around this problem;
 \structure{\textbf{Our Solution:}} 
 \begin{enumerate}
-    \item \textbf{Linearize} the forward model: %$\nonlin{\lstate}$,
+    \item \textbf{Linearise} the forward model: %$\nonlin{\lstate}$,
         \begin{equation}      
        \nonlin{\lstate} \approx  \nonlintilde{\lstate} = \Linmat\lstate + \intcpt  \text{,}
            \label{eq:linearise}
@@ -577,6 +577,12 @@ This results in the \emph{Gauss Newton} method.
 \end{figure}        
 
 Make sigma points \cite{Julier2004} $\Sfunc_{ni}$ and $\Sobs_{ni}$,
+\begin{align*}
+    \Sfunc_{n0} &= \pomeans_{nk}, \\
+    \Sfunc_{n1} &= \pomeans_{nk} + \sqrt{\brac{1 + \scoef}\pocovs_{nnk}}, \\
+    \Sfunc_{n2} &= \pomeans_{nk} - \sqrt{\brac{1 + \scoef}\pocovs_{nnk}}, \\
+    \Sobs_{ni} &= \nonlin{\Sfunc_{ni}},
+\end{align*}
 then solving $N$ scalar linear regression problems,
 \begin{equation*}
     \argmin_{\Lins_{nk}, \intcpts_{nk}} \sum^{2}_{i=0} 
